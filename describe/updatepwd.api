@@ -1,0 +1,26 @@
+syntax = "v2"
+info(
+    title: "updatepwd"
+    desc: "update password"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    updatepwdreq struct{
+        Code string `json:"code"`
+        Email string `json:"email"`
+        Password string `json:"email"`
+    }
+    updatepwdresp struct{
+        Status int  `json:"status"`
+    }
+)
+@server(
+    group: updatepwd
+)
+service yourbackend-api {
+    @handler updatepwd
+    post /api/updatepwd(updatepwdreq) returns(updatepwdresp)
+}
+

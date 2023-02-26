@@ -1,0 +1,30 @@
+syntax = "v2"
+info(
+    title: "register"
+    desc: "user register"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    registerreq{
+        Email string `json:"email"`
+        Name string `json:"name"` 
+        Pass string `json:"pass"`
+        Code string `json:"code"`
+    }
+    registerresp{
+        Status int `json:"status"`
+        Accesstoken string `json:"accessToken"`
+        Expires string `json:"expires"`
+        Name string `json:"name"`
+    }
+)
+@server(
+    group : register
+)
+service yourbackend-api {
+    @handler register
+    post /api/register(registerreq) returns(registerresp)
+}
+
