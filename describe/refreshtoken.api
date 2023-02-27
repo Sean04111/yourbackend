@@ -8,7 +8,7 @@ info(
 )
 type(
     refreshTokenreq struct{
-        Username string `json:"username"`
+        Email string `json:"email"`
     }
     refreshTokenresp struct{
         Status int `json:"status"`

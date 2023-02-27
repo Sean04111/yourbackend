@@ -15,6 +15,7 @@ type Registerreq struct {
 	Name  string `json:"name"`
 	Pass  string `json:"pass"`
 	Code  string `json:"code"`
+	Check string `json:"check"`
 }
 
 type Registerresp struct {
@@ -38,8 +39,9 @@ type Loginresp struct {
 
 type Updatepwdreq struct {
 	Code     string `json:"code"`
+	Check    string `json:"check"`
 	Email    string `json:"email"`
-	Password string `json:"email"`
+	Password string `json:"password"`
 }
 
 type Updatepwdresp struct {
@@ -47,7 +49,7 @@ type Updatepwdresp struct {
 }
 
 type RefreshTokenreq struct {
-	Username string `json:"username"`
+	Email string `json:"email"`
 }
 
 type RefreshTokenresp struct {
@@ -55,4 +57,21 @@ type RefreshTokenresp struct {
 	Name    string `json:"name"`
 	Token   string `json:"token"`
 	Expires string `json:"expires"`
+}
+
+type Pubkeyresp struct {
+	Status int    `json:"status"`
+	Pubkey string `json:"pubkey"`
+}
+
+type Baseinfor struct {
+	Status int  `json:"status"`
+	Info   Info `json:"info"`
+}
+
+type Info struct {
+	AvatarLink string `json:"avatarLink"`
+	UserName   string `json:"username"`
+	Profession string `json:"profession"`
+	Usermail   string `json:"usermail"`
 }

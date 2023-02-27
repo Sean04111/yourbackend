@@ -4,5 +4,5 @@ Port: 8888
 DB :
   Mysql: sql_127_0_0_1:123@tcp(121.36.131.50:3306)/sql_127_0_0_1?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Auth:
-  Secretkey: 123e4567-e89b-12d3-a456-426655440000
-  Expiretime : 1000
+  AccessSecret: 123e4567-e89b-12d3-a456-426655440000
+  AccessExpire : 1000

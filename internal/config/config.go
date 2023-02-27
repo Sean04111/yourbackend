@@ -8,7 +8,9 @@ type Config struct {
 		Mysql string
 	}
 	Auth struct{
-		Secretkey string
-		Expiretime int64
+		AccessSecret string
+		AccessExpire int64
 	}
 }
+
+

@@ -4,7 +4,9 @@ package handler
 import (
 	"net/http"
 
+	baseinfo "yourbackend/internal/handler/baseinfo"
 	login "yourbackend/internal/handler/login"
+	pubkey "yourbackend/internal/handler/pubkey"
 	refreshToken "yourbackend/internal/handler/refreshToken"
 	register "yourbackend/internal/handler/register"
 	updatepwd "yourbackend/internal/handler/updatepwd"
@@ -63,5 +65,26 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: refreshToken.RefreshTokenHandler(serverCtx),
 			},
 		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/pubkey",
+				Handler: pubkey.PubkeyHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/user/baseInfo",
+				Handler: baseinfo.BaseinfoHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

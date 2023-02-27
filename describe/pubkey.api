@@ -1,0 +1,24 @@
+syntax = "v2"
+info(
+    title: "pubkey"
+    desc: "get publickey"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    pubkeyresp struct{
+        Status int `json:"status"`
+        Pubkey string `json:"pubkey"`
+    }
+)
+@server(
+    group:pubkey
+)
+
+service yourbackend-api {
+    @handler  pubkey
+    get /api/pubkey returns(pubkeyresp)
+}
+
+

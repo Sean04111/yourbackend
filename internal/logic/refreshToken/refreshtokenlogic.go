@@ -27,23 +27,32 @@ func NewRefreshTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Refr
 }
 
 func (l *RefreshTokenLogic) RefreshToken(req *types.RefreshTokenreq) (resp *types.RefreshTokenresp, err error) {
-	Jwttoken,err:=l.GetJWT(l.svcCtx.Config.Auth.Secretkey,time.Now().Unix(),l.svcCtx.Config.Auth.Expiretime)
+	gotuser,err:=l.svcCtx.MysqlModel.FindOne(l.ctx,req.Email)
 	if err!=nil{
 		return &types.RefreshTokenresp{
 			Status: 1,
 		},err
 	}
+	Jwttoken,e:=l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,time.Now().Unix(),l.svcCtx.Config.Auth.AccessExpire,gotuser.Uid)
+	if e!=nil{
+		return &types.RefreshTokenresp{
+			Status: 1,
+		},e
+	}
 	return &types.RefreshTokenresp{
 		Status: 0,
 		Token: Jwttoken,
-		Expires: strconv.Itoa(int(l.svcCtx.Config.Auth.Expiretime+time.Now().Unix())),
+		Expires: strconv.Itoa(int(l.svcCtx.Config.Auth.AccessExpire+time.Now().Unix())),
 	},nil
 }
-func (l *RefreshTokenLogic)GetJWT(key string,starttime ,lasttime int64)(string ,error){
-	claim:=make(jwt.MapClaims)
-	claim["starttime"]=starttime
-	claim["expiretime"]=starttime+lasttime
-	token:=jwt.New(jwt.SigningMethodHS256)
-	token.Claims=claim
+func (l *RefreshTokenLogic) GetJWT(key,email string, starttime, lasttime,uid int64) (string, error) {
+	claim := make(jwt.MapClaims)
+	claim["starttime"] = starttime
+	claim["expiretime"] = starttime + lasttime
+	claim["email"] = email
+	claim["uid"]=uid
+	token := jwt.New(jwt.SigningMethodHS256)
+	token.Claims = claim
 	return token.SignedString([]byte(key))
 }
+

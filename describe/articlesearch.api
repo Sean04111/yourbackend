@@ -1,0 +1,33 @@
+syntax = "v2"
+info(
+    title: "article search"
+    desc: "search article"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    searchreq struct{
+        ArticleName string `json:"articleName"`
+    }
+    searchresp struct{
+        Status int `json:"status"`
+        DataLikes []article `json:"dataLikes"`
+    }
+    article struct{
+        "AvatarLink" string `json:"avatarLink"`
+        "ArticleName" string `json:"articleName"`
+        "ArticleImgLink" string `json:"articleImgLink"`
+        "ArticleID" int `json:"articleID"` 
+    }
+)
+@server(
+    group:articlesearch
+)
+servive{
+    @handler articlesearch
+    post /api/article/searchByTitle()
+}
+
+
+

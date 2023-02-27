@@ -12,6 +12,7 @@ type(
         Name string `json:"name"` 
         Pass string `json:"pass"`
         Code string `json:"code"`
+        Check string `json:"check"`
     }
     registerresp{
         Status int `json:"status"`

@@ -9,8 +9,9 @@ info(
 type(
     updatepwdreq struct{
         Code string `json:"code"`
+        Check string `json:"check"`
         Email string `json:"email"`
-        Password string `json:"email"`
+        Password string `json:"password"`
     }
     updatepwdresp struct{
         Status int  `json:"status"`
