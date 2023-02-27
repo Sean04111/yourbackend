@@ -4,6 +4,7 @@ import (
 	rsarand "crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"io/ioutil"
 	"yourbackend/internal/config"
@@ -15,7 +16,8 @@ import (
 type rsaoperator struct {
 
 }
-func (r *rsaoperator) Decode(cipher []byte) []byte {
+func (r *rsaoperator) Decode(cipher string) ([]byte,error ){
+	cipherbyte,_:=base64.StdEncoding.DecodeString(cipher)
 	f, e := ioutil.ReadFile("internal/svc/private.pem")
 	if e != nil {
 		panic(e)
@@ -25,11 +27,7 @@ func (r *rsaoperator) Decode(cipher []byte) []byte {
 	if er != nil {
 		panic(er)
 	}
-	real, err := rsa.DecryptPKCS1v15(rsarand.Reader, privatekey, cipher)
-	if err != nil {
-		panic(err)
-	}
-	return real
+	return rsa.DecryptPKCS1v15(rsarand.Reader, privatekey, cipherbyte)
 }
 func(r *rsaoperator)GetPubkey()[]byte{
 	f, e := ioutil.ReadFile("internal/svc/public.pem")

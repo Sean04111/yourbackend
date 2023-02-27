@@ -31,17 +31,19 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerresp, err error) {
+	//get the code for user
 	usercode, e := l.FromRedis(req.Email)
 	if e != nil {
 		return &types.Registerresp{
 			Status: 1,
 		}, nil
 	}
+	//user code not right
 	if usercode != req.Code {
 		return &types.Registerresp{
 			Status: 2,
 		}, nil
-	} else {
+	} else {//user code right
 		checkcode, b := l.FromRedis(usercode)
 		if b != nil {
 			return &types.Registerresp{
@@ -49,15 +51,23 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 			}, nil
 		}
 		if checkcode == req.Check {
+			//all code pass
 			stringuid, er := l.FromRedis("usernum")
 			if er != nil {
-				log.Fatalln("[Redis] Failed to get the data:")
 				return &types.Registerresp{
 					Status: 1,
 				}, nil
 			}
 			uid, _ := strconv.Atoi(stringuid)
-			storepwd, erro := bcrypt.GenerateFromPassword(l.svcCtx.RsaOps.Decode([]byte(req.Pass)), 10)
+			//decode the password
+			stringpwd,e:=l.svcCtx.RsaOps.Decode(req.Pass)
+			if e!=nil{
+				return &types.Registerresp{
+					Status: 1,
+					
+				},nil
+			}
+			storepwd, erro := bcrypt.GenerateFromPassword(stringpwd, 10)
 			if erro != nil {
 				return &types.Registerresp{
 					Status: 1,
@@ -69,8 +79,8 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 				Password: string(storepwd),
 				Name:     req.Name,
 			}
-			_, e := l.svcCtx.MysqlModel.Insert(l.ctx, &newuser)
-			if e != nil {
+			_, errorr := l.svcCtx.MysqlModel.Insert(l.ctx, &newuser)
+			if errorr != nil {
 				log.Fatalln("[Model] Failed to insert data", e)
 				return &types.Registerresp{
 					Status: 1,

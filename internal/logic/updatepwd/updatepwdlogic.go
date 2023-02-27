@@ -42,7 +42,13 @@ func (l *UpdatepwdLogic) Updatepwd(req *types.Updatepwdreq) (resp *types.Updatep
 					Status: 1,
 				}, e
 			}
-			storepwd, erro := bcrypt.GenerateFromPassword(l.svcCtx.RsaOps.Decode([]byte(req.Password)), 10)
+			stringpwd,errorr:=l.svcCtx.RsaOps.Decode(req.Password)
+			if errorr!=nil{
+				return &types.Updatepwdresp{
+					Status: 1,
+				},nil
+			}
+			storepwd, erro := bcrypt.GenerateFromPassword(stringpwd, 10)
 			if erro != nil {
 				return &types.Updatepwdresp{
 					Status: 1,

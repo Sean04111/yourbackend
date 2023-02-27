@@ -29,7 +29,12 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.Loginreq) (resp *types.Loginresp, err error) {
-	requsetpassword:=l.svcCtx.RsaOps.Decode([]byte(req.Password))
+	requsetpassword,e:=l.svcCtx.RsaOps.Decode(req.Password)
+	if e!=nil{
+		return &types.Loginresp{
+			Status: 1,
+		},nil
+	}
 	gotuser, err := l.svcCtx.MysqlModel.FindOne(l.ctx, req.Email)
 	switch err {
 	case model.ErrNotFound:
