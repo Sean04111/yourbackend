@@ -29,14 +29,22 @@ func NewSettingavaLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Settin
 
 func (l *SettingavaLogic) Settingava(req *types.Settingavareq) ( *types.Settingavaresp,  error) {
 	newimf,er:=os.Create("internal/static/ava/"+l.ctx.Value("uid").(string)+".jpg")
-	defer newimf.Close().Error()
+	defer func ()  {
+		if e1:=newimf.Close();e1!=nil{
+			panic(e1)
+		}	
+	}()
 	if er!=nil{
 		return &types.Settingavaresp{
 			Status: 1,
 		},nil
 	}
 	file,e:=l.Img.Open()
-	defer file.Close().Error()
+	defer func() {
+		if e2:=file.Close();e2!=nil{
+			panic(e2)
+		}
+	}()
 	if e!=nil{
 		return &types.Settingavaresp{
 			Status: 1,
