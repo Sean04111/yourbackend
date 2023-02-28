@@ -33,7 +33,7 @@ func (l *RefreshTokenLogic) RefreshToken(req *types.RefreshTokenreq) (resp *type
 			Status: 1,
 		},err
 	}
-	Jwttoken,e:=l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,time.Now().Unix(),l.svcCtx.Config.Auth.AccessExpire,gotuser.Uid)
+	Jwttoken,e:=l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,strconv.Itoa(int(gotuser.Uid)),time.Now().Unix(),l.svcCtx.Config.Auth.AccessExpire)
 	if e!=nil{
 		return &types.RefreshTokenresp{
 			Status: 1,
@@ -41,11 +41,12 @@ func (l *RefreshTokenLogic) RefreshToken(req *types.RefreshTokenreq) (resp *type
 	}
 	return &types.RefreshTokenresp{
 		Status: 0,
+		Name: gotuser.Name,
 		Token: Jwttoken,
 		Expires: strconv.Itoa(int(l.svcCtx.Config.Auth.AccessExpire+time.Now().Unix())),
 	},nil
 }
-func (l *RefreshTokenLogic) GetJWT(key,email string, starttime, lasttime,uid int64) (string, error) {
+func (l *RefreshTokenLogic) GetJWT(key,email,uid string, starttime, lasttime int64) (string, error) {
 	claim := make(jwt.MapClaims)
 	claim["starttime"] = starttime
 	claim["expiretime"] = starttime + lasttime

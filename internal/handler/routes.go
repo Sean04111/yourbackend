@@ -9,6 +9,8 @@ import (
 	pubkey "yourbackend/internal/handler/pubkey"
 	refreshToken "yourbackend/internal/handler/refreshToken"
 	register "yourbackend/internal/handler/register"
+	settingava "yourbackend/internal/handler/settingava"
+	settingbase "yourbackend/internal/handler/settingbase"
 	updatepwd "yourbackend/internal/handler/updatepwd"
 	verification_code "yourbackend/internal/handler/verification_code"
 	"yourbackend/internal/svc"
@@ -86,5 +88,39 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/myinfo/settingbase",
+				Handler: settingbase.SettingbaseHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/myinfo/settingnewimg",
+				Handler: settingava.SettingavaHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method: http.MethodGet,
+				Path:"/src",
+				Handler:func(w http.ResponseWriter, r *http.Request) {
+					
+				},
+			},
+		},
 	)
 }

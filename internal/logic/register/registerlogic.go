@@ -74,7 +74,7 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 				}, erro
 			}
 			newuser := model.User{
-				Uid:      int64(uid) + 1,
+				Uid:      int64(uid + 1),
 				Email:    req.Email,
 				Password: string(storepwd),
 				Name:     req.Name,
@@ -87,7 +87,7 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 				}, e
 			}
 			now := time.Now().Unix()
-			Jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret, l.svcCtx.Config.Auth.AccessExpire, newuser.Uid, now)
+			Jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,newuser.Email,strconv.Itoa(int(newuser.Uid)), l.svcCtx.Config.Auth.AccessExpire, now)
 			if err != nil {
 				log.Fatalln("[JWT] Failed to generate json web token : ", err)
 				return &types.Registerresp{
@@ -113,18 +113,23 @@ func (l *RegisterLogic) FromRedis(keyword string) (string, error) {
 		Addr: "121.36.131.50:6379",
 		DB:   0,
 	})
-	if code, e := redisclient.Get(keyword).Result(); e != nil {
+	code, e := redisclient.Get(keyword).Result()
+	if e != nil {
 		log.Fatalln("[Redis] Failed to get data from redis")
 		return "", e
-	} else {
-		return code, nil
 	}
+	if keyword=="usernum"{
+		numcode,_:=strconv.Atoi(code)
+		redisclient.Set("usernum",numcode+1,0)
+	}
+	return code,nil
 }
-func (l *RegisterLogic) GetJWT(secretkey string, lasttime, uid, starttime int64) (string, error) {
+func (l *RegisterLogic) GetJWT(secretkey ,email,uid string, lasttime, starttime int64) (string, error) {
 	claim := make(jwt.MapClaims)
 	claim["starttime"] = starttime
 	claim["uid"] = uid
 	claim["expiretime"] = starttime + lasttime
+	claim["email"]=email
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claim
 	return token.SignedString([]byte(secretkey))

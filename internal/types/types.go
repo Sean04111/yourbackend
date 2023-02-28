@@ -74,4 +74,22 @@ type Info struct {
 	UserName   string `json:"username"`
 	Profession string `json:"profession"`
 	Usermail   string `json:"usermail"`
+	Type       string `json:"type"`
+}
+
+type Settingbasereq struct {
+	Name       string `json:"name"`
+	Profession string `json:"profession"`
+	Type       string `json:"type"`
+}
+
+type Settingbaseresp struct {
+	Status int `json:"status"`
+}
+
+type Settingavareq struct {
+}
+
+type Settingavaresp struct {
+	Status int `json:"status"`
 }

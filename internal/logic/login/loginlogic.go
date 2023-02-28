@@ -43,7 +43,7 @@ func (l *LoginLogic) Login(req *types.Loginreq) (resp *types.Loginresp, err erro
 		}, err
 	case nil:
 		if bcrypt.CompareHashAndPassword([]byte(gotuser.Password),requsetpassword)==nil {
-			jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire,gotuser.Uid)
+			jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,strconv.Itoa(int(gotuser.Uid)), time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire)
 			if err != nil {
 				return &types.Loginresp{
 					Status: 1,
@@ -66,7 +66,7 @@ func (l *LoginLogic) Login(req *types.Loginreq) (resp *types.Loginresp, err erro
 		}, err
 	}
 }
-func (l *LoginLogic) GetJWT(key,email string, starttime, lasttime ,uid int64) (string, error) {
+func (l *LoginLogic) GetJWT(key,email,uid string, starttime, lasttime  int64) (string, error) {
 	claim := make(jwt.MapClaims)
 	claim["starttime"] = starttime
 	claim["expiretime"] = starttime + lasttime

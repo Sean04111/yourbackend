@@ -23,10 +23,23 @@ func NewBaseinfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Baseinfo
 	}
 }
 
-func (l *BaseinfoLogic) Baseinfo() (resp *types.Baseinfor, err error) {
-	return &types.Baseinfor{
-		Info: types.Info{
-			Usermail: l.ctx.Value("email").(string),
-		},
-	},nil
+func (l *BaseinfoLogic) Baseinfo() (*types.Baseinfor, error) {
+	gotuser, err := l.svcCtx.MysqlModel.FindOne(l.ctx, l.ctx.Value("email").(string))
+	if err != nil {
+		return &types.Baseinfor{
+			Status: 1,
+		}, nil
+	} else {
+		return &types.Baseinfor{
+			Status: 0,
+			Info: types.Info{
+				AvatarLink: gotuser.AvatarLink,
+				UserName: gotuser.Name,
+				Profession: gotuser.Profession,
+				Type: gotuser.Type,
+				Usermail: l.ctx.Value("email").(string),
+			},
+		}, nil
+	}
+
 }

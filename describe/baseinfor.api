@@ -16,6 +16,7 @@ type(
         UserName string `json:"username"`
         Profession string `json:"profession"`
         Usermail string `json:"usermail"`
+        Type string `json:"type"`
     }
 )
 @server(
