@@ -83,8 +83,8 @@ func (l *UpdatepwdLogic) Updatepwd(req *types.Updatepwdreq) (resp *types.Updatep
 }
 func (l *UpdatepwdLogic) FromRedis(keyword string) (string, error) {
 	redisclient := redis.NewClient(&redis.Options{
-		Addr: "121.36.131.50:6379",
-		DB:   0,
+		Addr: l.svcCtx.Config.Redis.Addr,
+		DB:   l.svcCtx.Config.Redis.DB,
 	})
 	return redisclient.Get(keyword).Result()
 }

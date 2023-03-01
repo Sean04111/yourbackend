@@ -6,4 +6,15 @@ DB :
 Auth:
   AccessSecret: 123e4567-e89b-12d3-a456-426655440000
   AccessExpire : 10000000000
-
+Redis:
+  Addr: 121.36.131.50:6379
+  DB: 0
+ES:
+  Addr: http://121.36.131.50:9200
+Mongo:
+  Addr: mongodb://121.36.131.50:27017
+Url:
+  Url: http://127.0.0.1:8888
+## ms
+Tolerance:
+  DBTime: 100 

@@ -11,6 +11,22 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
+	Redis struct{
+		Addr string 
+		DB int
+	}
+	ES struct{
+		Addr string
+	}
+	Mongo struct{
+		Addr string
+	}
+	Url struct {
+		Url string
+	}
+	Tolerance struct{
+		DBTime int64
+	}
 }
 
 

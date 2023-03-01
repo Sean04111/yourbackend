@@ -110,8 +110,8 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 }
 func (l *RegisterLogic) FromRedis(keyword string) (string, error) {
 	redisclient := redis.NewClient(&redis.Options{
-		Addr: "121.36.131.50:6379",
-		DB:   0,
+		Addr: l.svcCtx.Config.Redis.Addr,
+		DB:   l.svcCtx.Config.Redis.DB,
 	})
 	code, e := redisclient.Get(keyword).Result()
 	if e != nil {

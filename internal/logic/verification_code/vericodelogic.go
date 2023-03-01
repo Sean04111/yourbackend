@@ -79,8 +79,8 @@ func (l *VericodeLogic) SendCode(receiver string) (string, error) {
 }
 func (l *VericodeLogic) ToRedis(keyword, code string) error {
 	client := redis.NewClient(&redis.Options{
-		Addr: "121.36.131.50:6379", //find a avaliable redis!
-		DB:   0,
+		Addr: l.svcCtx.Config.Redis.Addr, 
+		DB:   l.svcCtx.Config.Redis.DB,
 	})
 	pong, err := client.Ping().Result()
 	if err != nil {

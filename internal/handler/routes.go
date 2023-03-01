@@ -11,6 +11,7 @@ import (
 	register "yourbackend/internal/handler/register"
 	settingava "yourbackend/internal/handler/settingava"
 	settingbase "yourbackend/internal/handler/settingbase"
+	updatecontent "yourbackend/internal/handler/updatecontent"
 	updatepwd "yourbackend/internal/handler/updatepwd"
 	verification_code "yourbackend/internal/handler/verification_code"
 	"yourbackend/internal/svc"
@@ -115,12 +116,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
-				Method: http.MethodGet,
-				Path:"/src",
-				Handler:func(w http.ResponseWriter, r *http.Request) {
-					
-				},
+				Method:  http.MethodPost,
+				Path:    "/updatecontent",
+				Handler: updatecontent.UpdatecontentHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }
