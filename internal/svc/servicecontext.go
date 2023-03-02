@@ -43,11 +43,13 @@ type ServiceContext struct {
 	Config     config.Config
 	MysqlModel model.UserModel
 	RsaOps     rsaoperator
+	ArticleMysqlModel model.ArticlesModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:     c,
 		MysqlModel: model.NewUserModel(sqlx.NewMysql(c.DB.Mysql)),
+		ArticleMysqlModel: model.NewArticlesModel(sqlx.NewMysql(c.DB.Mysql)),
 	}
 }
