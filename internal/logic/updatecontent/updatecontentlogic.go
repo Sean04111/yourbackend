@@ -34,7 +34,8 @@ func NewUpdatecontentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 
 //frequent operation !
 // improvement needed!
-//redis needed as a cache
+//redis should be here to catch the request !!
+
 func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articleresp, error) {
 	if req.Arid == "" {
 		gotuser, e := l.svcCtx.MysqlModel.FindOne(l.ctx, l.ctx.Value("email").(string))
@@ -49,7 +50,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		errchan := make(chan error, 2)
 		go func() {
 			defer wg.Done()
-			err := l.ToES(arid, title, fewcontent, "insert")
+			err := l.ToES(arid, title, fewcontent, "insert",req.Content=="")
 			if err != nil {
 				errchan <- err
 			} else {
@@ -73,7 +74,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 				}, nil
 		default:
 			return &types.Articleresp{
-				Status:    1,
+				Status:    0,
 				Arid:      arid,
 				IsPublish: req.IsPublish,
 			}, nil
@@ -94,7 +95,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		}()
 		go func(){
 			defer wg.Done()
-			err:=l.ToES(arid,title,fewcontent,"update")
+			err:=l.ToES(arid,title,fewcontent,"update",req.Content=="")
 			if err!=nil{
 				errchan<-err
 			}else{
@@ -123,7 +124,7 @@ type ESar struct {
 	Title      string `json:"title"`
 }
 
-func (l *UpdatecontentLogic) ToES(mongoid, title, fewcontent, operation string) error {
+func (l *UpdatecontentLogic) ToES(mongoid, title, fewcontent, operation string,isDelete bool) error {
 	esclient, e := elastic.NewClient(elastic.SetURL(l.svcCtx.Config.ES.Addr), elastic.SetSniff(false))
 	if e != nil {
 		return e
@@ -136,6 +137,10 @@ func (l *UpdatecontentLogic) ToES(mongoid, title, fewcontent, operation string) 
 		Fewcontent: fewcontent,
 		Title:      title,
 	}
+	if isDelete{
+		_, errrr := esclient.DeleteByQuery().Index("article").Query(elastic.NewTermQuery("mongoid", mongoid)).ProceedOnVersionConflict().Do(context.Background())
+		return errrr
+	}
 	switch operation {
 	case "insert":
 		if _, err := esclient.Index().Index("article").BodyJson(tw).Do(context.Background()); err != nil {
@@ -145,12 +150,13 @@ func (l *UpdatecontentLogic) ToES(mongoid, title, fewcontent, operation string) 
 		}
 	case "update":
 		//!
-		script := "ctx._source[`title`]=" + title + ";ctx._source[`fewcontent`]=" + fewcontent 
-		_, errr := esclient.UpdateByQuery().Index("article").Query(elastic.NewTermQuery("mongoid", mongoid)).Script(elastic.NewScript(script)).ProceedOnVersionConflict().Do(context.Background())
+		script := elastic.NewScriptInline("ctx._source.title=params.title;ctx._source.fewcontent=params.fewcontent").Params(map[string]interface{}{
+			"title":title,
+			"fewcontent":fewcontent,
+		}) 
+		_, errr := esclient.UpdateByQuery().Index("article").Query(elastic.NewTermQuery("mongoid", mongoid)).Script(script).ProceedOnVersionConflict().Do(context.Background())
 		return errr
-	case "delete":
-		_, errrr := esclient.DeleteByQuery().Index("article").Query(elastic.NewTermQuery("mongoid", mongoid)).ProceedOnVersionConflict().Do(context.Background())
-		return errrr
+	
 	default:
 		return errors.New("wrong operation")
 	}
@@ -192,8 +198,13 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) error {
 //for insert bson the arid should be "",
 //for update bson the author should be "",
 //The returns are bson, arid, title,fewcontent
-func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, time int64, ispublish, isdelete bool) (bson.M, string, string, string) {
+func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, time int64, ispublish, isDelete bool) (bson.M, string, string, string) {
 	bm := bson.M{}
+	if isDelete{
+		bm["arid"]=arid
+		bm["isDelete"]=true
+		return bm,arid,"",""
+	}
 	co := strings.Index(content, "\n")
 	title := strings.TrimSpace(strings.Trim(content[:co], "#"))
 	if arid == "" {
@@ -201,16 +212,21 @@ func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, ti
 	}
 	a := strings.Index(content, "![](")
 	b := strings.Index(content, "g)")
-	coverlink := content[a+4 : b+1]
-	fewcontent := strings.Trim(strings.Trim(content, title), "#")[1:100]
-	if coverlink == "" {
-		bm["coverlink"] = coverlink
-	} else {
+	if a==b{
 		bm["coverlink"] = cover
+	}else{
+		bm["coverlink"] =content[a+4 : b+1]
 	}
-	bm["arid"] = arid
+	var min = 100
+	if len(content) < 100 {
+		min = len(content)-strings.Count(content,"#")
+	}
+	fewcontent := strings.Trim(content,"#")[1:min]
+	
+	bm["fewcontent"] = fewcontent
 	bm["title"] = title
 	bm["content"] = content
+	bm["arid"] = arid
 	bm["created"] = time
 	bm["authorname"] = author
 	bm["authorid"] = l.ctx.Value("uid")
@@ -219,8 +235,7 @@ func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, ti
 	bm["readers"] = []string{}
 	bm["ispublish"] = ispublish
 	bm["lastrefresh"] = int64(0)
-	bm["fewcontent"] = fewcontent
-	bm["isDelete"] = isdelete
+	bm["isDelete"] = isDelete
 	bm["url"] = l.svcCtx.Config.Url.Url + "reading/?ar_id" + arid
 	return bm, arid, title, fewcontent
 }
