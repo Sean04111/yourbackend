@@ -9,6 +9,7 @@ import (
 	pubkey "yourbackend/internal/handler/pubkey"
 	refreshToken "yourbackend/internal/handler/refreshToken"
 	register "yourbackend/internal/handler/register"
+	searcharticle "yourbackend/internal/handler/searcharticle"
 	settingava "yourbackend/internal/handler/settingava"
 	settingbase "yourbackend/internal/handler/settingbase"
 	updatecontent "yourbackend/internal/handler/updatecontent"
@@ -122,5 +123,15 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/article/searchByTitle",
+				Handler: searcharticle.SearchbytitleHandler(serverCtx),
+			},
+		},
 	)
 }
