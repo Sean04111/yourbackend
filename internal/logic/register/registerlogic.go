@@ -2,6 +2,9 @@ package register
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"strconv"
 	"time"
@@ -10,6 +13,7 @@ import (
 	"yourbackend/internal/svc"
 	"yourbackend/internal/types"
 
+	"github.com/bwmarrin/snowflake"
 	"github.com/go-redis/redis"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -43,7 +47,7 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 		return &types.Registerresp{
 			Status: 2,
 		}, nil
-	} else {//user code right
+	} else { //user code right
 		checkcode, b := l.FromRedis(usercode)
 		if b != nil {
 			return &types.Registerresp{
@@ -51,21 +55,19 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 			}, nil
 		}
 		if checkcode == req.Check {
-			//all code pass
-			stringuid, er := l.FromRedis("usernum")
+			node, er := snowflake.NewNode(1)
 			if er != nil {
 				return &types.Registerresp{
 					Status: 1,
 				}, nil
 			}
-			uid, _ := strconv.Atoi(stringuid)
+			uid := node.Generate()
 			//decode the password
-			stringpwd,e:=l.svcCtx.RsaOps.Decode(req.Pass)
-			if e!=nil{
+			stringpwd, e := l.svcCtx.RsaOps.Decode(req.Pass)
+			if e != nil {
 				return &types.Registerresp{
 					Status: 1,
-					
-				},nil
+				}, nil
 			}
 			storepwd, erro := bcrypt.GenerateFromPassword(stringpwd, 10)
 			if erro != nil {
@@ -74,7 +76,7 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 				}, erro
 			}
 			newuser := model.User{
-				Uid:      int64(uid + 1),
+				Uid:      uid.String(),
 				Email:    req.Email,
 				Password: string(storepwd),
 				Name:     req.Name,
@@ -87,12 +89,18 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 				}, e
 			}
 			now := time.Now().Unix()
-			Jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,newuser.Email,strconv.Itoa(int(newuser.Uid)), l.svcCtx.Config.Auth.AccessExpire, now)
+			Jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret, newuser.Email, newuser.Uid, l.svcCtx.Config.Auth.AccessExpire, now)
 			if err != nil {
 				log.Fatalln("[JWT] Failed to generate json web token : ", err)
 				return &types.Registerresp{
 					Status: 1,
 				}, err
+			}
+			errr := l.ToMongo(uid.String())
+			if errr != nil {
+				return &types.Registerresp{
+					Status: 1,
+				}, nil
 			}
 			return &types.Registerresp{
 				Status:      0,
@@ -118,19 +126,33 @@ func (l *RegisterLogic) FromRedis(keyword string) (string, error) {
 		log.Fatalln("[Redis] Failed to get data from redis")
 		return "", e
 	}
-	if keyword=="usernum"{
-		numcode,_:=strconv.Atoi(code)
-		redisclient.Set("usernum",numcode+1,0)
-	}
-	return code,nil
+	return code, nil
 }
-func (l *RegisterLogic) GetJWT(secretkey ,email,uid string, lasttime, starttime int64) (string, error) {
+func (l *RegisterLogic) GetJWT(secretkey, email, uid string, lasttime, starttime int64) (string, error) {
 	claim := make(jwt.MapClaims)
 	claim["starttime"] = starttime
 	claim["uid"] = uid
 	claim["expiretime"] = starttime + lasttime
-	claim["email"]=email
+	claim["email"] = email
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claim
 	return token.SignedString([]byte(secretkey))
+}
+func (l *RegisterLogic) ToMongo(uid string) error {
+	mongoclient, e := mongo.Connect(context.Background(), options.Client().ApplyURI(l.svcCtx.Config.Mongo.Addr))
+	if e != nil {
+		return e
+	}
+	collection := mongoclient.Database("DB").Collection("userarticle")
+	toinsert:=bson.M{}
+	toinsert["uid"] = uid
+	toinsert["articles"] = []string{}
+	toinsert["alldata"] = [7]int{}
+	toinsert["lastrefresh"] = time.Now().Unix()
+	toinsert["likes"] = []string{}
+	_, err := collection.InsertOne(context.Background(), toinsert)
+	if err != nil {
+		return err
+	}
+	return nil
 }

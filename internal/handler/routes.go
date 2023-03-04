@@ -4,7 +4,9 @@ package handler
 import (
 	"net/http"
 
+	articleread "yourbackend/internal/handler/articleread"
 	baseinfo "yourbackend/internal/handler/baseinfo"
+	getarticle "yourbackend/internal/handler/getarticle"
 	login "yourbackend/internal/handler/login"
 	pubkey "yourbackend/internal/handler/pubkey"
 	refreshToken "yourbackend/internal/handler/refreshToken"
@@ -131,6 +133,26 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/api/article/searchByTitle",
 				Handler: searcharticle.SearchbytitleHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/article/getarticle",
+				Handler: getarticle.GetarticleHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/reading/content",
+				Handler: articleread.ArticlereadHandler(serverCtx),
 			},
 		},
 	)

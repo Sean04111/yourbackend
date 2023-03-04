@@ -12,7 +12,7 @@ import (
 	"yourbackend/internal/svc"
 	"yourbackend/internal/types"
 
-	"github.com/google/uuid"
+	"github.com/bwmarrin/snowflake"
 	"github.com/olivere/elastic/v7"
 	"github.com/zeromicro/go-zero/core/logx"
 	"go.mongodb.org/mongo-driver/bson"
@@ -184,6 +184,7 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) (error, error)
 			_, errr := collection.DeleteOne(context.Background(), bson.M{"arid": ar["arid"]}, options.Delete().SetCollation(&options.Collation{
 				CaseLevel: false,
 			}))
+			l.ToUserMongo(ar["authorid"].(string),ar["arid"].(string),"delete")
 			e := l.svcCtx.ArticleMysqlModel.Delete(l.ctx, ar["arid"].(string))
 			return errr, e
 		} else {
@@ -198,6 +199,7 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) (error, error)
 				Pubtime:    strconv.Itoa(int(ar["created"].(int64))),
 				Coverlinks: ar["coverlink"].(string),
 			})
+			l.ToUserMongo(ar["authorid"].(string),ar["arid"].(string),"insert")
 			return er, e
 		}
 	case "update":
@@ -205,6 +207,7 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) (error, error)
 			_, errr := collection.DeleteOne(context.Background(), bson.M{"arid": ar["arid"]}, options.Delete().SetCollation(&options.Collation{
 				CaseLevel: false,
 			}))
+			l.ToUserMongo(ar["authorid"].(string),ar["arid"].(string),"delete")
 			e := l.svcCtx.ArticleMysqlModel.Delete(l.ctx, ar["arid"].(string))
 			return errr, e
 		} else {
@@ -226,6 +229,41 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) (error, error)
 		return errors.New("wrong operation"), nil
 	}
 }
+func (l *UpdatecontentLogic) ToUserMongo(uid, arid, operation string) error {
+	client, e := mongo.Connect(context.TODO(), options.Client().ApplyURI(l.svcCtx.Config.Mongo.Addr))
+	if e != nil {
+		return e
+	}
+	collection := client.Database("DB").Collection("userarticle")
+	res := collection.FindOne(context.Background(), bson.M{"uid": uid},options.FindOne())
+	var got bson.M
+	er:=res.Decode(&got)
+	if er!=nil{
+		return er
+	}
+	arlist := got["articles"].(bson.A)
+	switch operation {
+	case "insert":
+		arlist = append(arlist, arid)
+		_, er := collection.UpdateOne(context.Background(), bson.M{"uid": uid}, bson.M{"$set": bson.M{"articles": arlist}})
+		if er != nil {
+			return er
+		}
+	case "delete":
+		for i:=0;i<len(arlist);i++{
+			if arlist[i]==arid{
+				arlist=append( arlist[:i],arlist[i+1:]...)
+			}
+		}
+		_, er := collection.UpdateOne(context.Background(), bson.M{"uid": uid}, bson.M{"$set": bson.M{"articles": arlist}})
+		if er != nil {
+			return er
+		}
+	default:
+		return errors.New("wrong operaion")
+	}
+	return nil
+}
 
 //for insert bson the arid should be "",
 //for update bson the author should be "",
@@ -240,7 +278,8 @@ func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, ti
 	co := strings.Index(content, "\n")
 	title := strings.TrimSpace(strings.Trim(content[:co], "#"))
 	if arid == "" {
-		arid = uuid.New().String()
+		node, _ := snowflake.NewNode(1)
+		arid = node.Generate().String()
 	}
 	a := strings.Index(content, "![](")
 	b := strings.Index(content, "g)")

@@ -35,7 +35,7 @@ type (
 	}
 
 	User struct {
-		Uid        int64  `db:"uid"`
+		Uid        string  `db:"uid"`
 		Email      string `db:"email"`
 		Password   string `db:"password"`
 		Name       string `db:"name"`

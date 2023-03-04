@@ -33,7 +33,7 @@ func (l *RefreshTokenLogic) RefreshToken(req *types.RefreshTokenreq) (resp *type
 			Status: 1,
 		},err
 	}
-	Jwttoken,e:=l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,strconv.Itoa(int(gotuser.Uid)),time.Now().Unix(),l.svcCtx.Config.Auth.AccessExpire)
+	Jwttoken,e:=l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,gotuser.Uid,time.Now().Unix(),l.svcCtx.Config.Auth.AccessExpire)
 	if e!=nil{
 		return &types.RefreshTokenresp{
 			Status: 1,

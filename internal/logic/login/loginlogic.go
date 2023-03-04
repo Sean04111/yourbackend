@@ -43,7 +43,7 @@ func (l *LoginLogic) Login(req *types.Loginreq) (resp *types.Loginresp, err erro
 		}, err
 	case nil:
 		if bcrypt.CompareHashAndPassword([]byte(gotuser.Password),requsetpassword)==nil {
-			jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,strconv.Itoa(int(gotuser.Uid)), time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire)
+			jwttoken, err := l.GetJWT(l.svcCtx.Config.Auth.AccessSecret,req.Email,gotuser.Uid, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire)
 			if err != nil {
 				return &types.Loginresp{
 					Status: 1,

@@ -3,15 +3,20 @@ module yourbackend
 go 1.18
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/zeromicro/go-zero v1.4.4
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+	gorm.io/driver/mysql v1.4.7
+	gorm.io/gorm v1.24.6
 )
 
 require (
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 )
@@ -30,7 +35,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/pprof v0.0.0-20211214055906-6f57359322fd // indirect
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/mattn/go-colorable v0.1.9 // indirect

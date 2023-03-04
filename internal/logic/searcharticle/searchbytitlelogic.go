@@ -71,7 +71,7 @@ func (l *SearchbytitleLogic) FromES(keyword string) ([]*model.Articles, error) {
 		return nil, e
 	}
 	matchquery := elastic.NewMatchQuery("fewcontent", keyword)
-	searchresult, er := esclient.Search().Index("article").Query(matchquery).Do(context.Background())
+	searchresult, er := esclient.Search().Index("article").Query(matchquery).From(0).Size(10).Do(context.TODO())
 	if er != nil {
 		return nil, er
 	}else 
@@ -89,11 +89,10 @@ func (l *SearchbytitleLogic) FromES(keyword string) ([]*model.Articles, error) {
 				return nil, e
 			}
 			Res = append(Res, res)
-			return Res, nil
 		}
+		return Res,nil
 	} else {
 		return nil, errors.New("NoMatch")
 	}
-	return nil,nil
 }
 

@@ -1,0 +1,35 @@
+syntax = "v2"
+info(
+    title: "getarticle"
+    desc: "get article"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type (
+    getarticlereq struct{
+
+    }
+    getarticleresp struct{
+        Status int `json:"status"`
+        Articlelist []GetArticle `json:"articallist"`
+    }
+    GetArticle struct {
+       Id string `json:"id"`
+       Title string `json:"title"`
+       Url string `json:"url"`
+       Description string `json:"description"`
+       Likes int `json:"likes"`
+       Reads int `json:"reads"`
+       Pubtime string `json:"pubtime"`
+        Imglink string `json:"imglink"`
+    }
+)
+@server(
+    group:getarticle
+)
+service yourbackend-api {
+    @handler getarticle
+    get /api/article/getarticle (getarticlereq)returns(getarticleresp)
+}
+

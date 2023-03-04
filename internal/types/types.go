@@ -125,3 +125,34 @@ type Article struct {
 	Pubtime     string `json:"pubtime"`
 	Imglink     string `json:"imglink"`
 }
+
+type Getarticlereq struct {
+}
+
+type Getarticleresp struct {
+	Status      int          `json:"status"`
+	Articlelist []GetArticle `json:"articallist"`
+}
+
+type GetArticle struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Url         string `json:"url"`
+	Description string `json:"description"`
+	Likes       int    `json:"likes"`
+	Reads       int    `json:"reads"`
+	Pubtime     string `json:"pubtime"`
+	Imglink     string `json:"imglink"`
+}
+
+type Readarticlereq struct {
+	Arid   string `form:"id"`
+	Userid string `form:"user,optional"`
+}
+
+type Readarticleresp struct {
+	Status  int    `json:"status"`
+	Content string `json:"content"`
+	Title   string `json:"title"`
+	IsEdit  bool   `json:"isEdit"`
+}
