@@ -2,9 +2,11 @@ package articleread
 
 import (
 	"context"
+	"strconv"
 	"sync"
 	"time"
 
+	"yourbackend/internal/model"
 	"yourbackend/internal/svc"
 	"yourbackend/internal/types"
 
@@ -153,6 +155,19 @@ func (l *ArticlereadLogic) Artihandler(article bson.M) error {
 	_, er := articlecollection.UpdateOne(context.Background(), bson.M{"arid": article["arid"].(string)}, bson.M{"$set": bson.M{"daysdata": daysdata, "views": article["views"].(int64) + 1}})
 	if er != nil {
 		return er
+	}
+	err :=l.svcCtx.ArticleMysqlModel.Update(l.ctx, &model.Articles{
+		Mongoid:    article["arid"].(string),
+		Title:      article["title"].(string),
+		Fewcontent: article["fewcontent"].(string),
+		Likes:      article["likes"].(int64),
+		Views:      article["views"].(int64),
+		Url:        article["url"].(string),
+		Pubtime:    strconv.Itoa(int(article["created"].(int64))),
+		Coverlinks: article["coverlink"].(string),
+	})
+	if err!=nil{
+		return err
 	}
 	return nil
 }

@@ -61,7 +61,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		}()
 		go func() {
 			defer wg.Done()
-			er1, er2 := l.ToMongo(bson, "insert")
+			er1, er2 := l.ToMongo(bson, "insert", req)
 			if er1 != nil {
 				errchan <- er1
 			}
@@ -91,7 +91,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		wg.Add(2)
 		go func() {
 			defer wg.Done()
-			err1, err2 := l.ToMongo(bson, "update")
+			err1, err2 := l.ToMongo(bson, "update", req)
 			if err1 != nil {
 				errchan <- err1
 			}
@@ -171,7 +171,7 @@ func (l *UpdatecontentLogic) ToES(mongoid, title, fewcontent, operation string, 
 }
 
 //The first error id for mongoDB the second error is for mysql
-func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) (error, error) {
+func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string, req *types.Articlereq) (error, error) {
 	clientops := options.Client().ApplyURI(l.svcCtx.Config.Mongo.Addr)
 	mongoclient, err := mongo.Connect(context.TODO(), clientops)
 	if err != nil {
@@ -184,30 +184,34 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string) (error, error)
 			_, errr := collection.DeleteOne(context.Background(), bson.M{"arid": ar["arid"]}, options.Delete().SetCollation(&options.Collation{
 				CaseLevel: false,
 			}))
-			l.ToUserMongo(ar["authorid"].(string),ar["arid"].(string),"delete")
+			l.ToUserMongo(ar["authorid"].(string), ar["arid"].(string), "delete")
 			e := l.svcCtx.ArticleMysqlModel.Delete(l.ctx, ar["arid"].(string))
 			return errr, e
 		} else {
 			_, er := collection.InsertOne(context.Background(), ar)
-			_, e := l.svcCtx.ArticleMysqlModel.Insert(l.ctx, &model.Articles{
-				Mongoid:    ar["arid"].(string),
-				Title:      ar["title"].(string),
-				Fewcontent: ar["fewcontent"].(string),
-				Likes:      ar["likes"].(int64),
-				Views:      ar["views"].(int64),
-				Url:        ar["url"].(string),
-				Pubtime:    strconv.Itoa(int(ar["created"].(int64))),
-				Coverlinks: ar["coverlink"].(string),
-			})
-			l.ToUserMongo(ar["authorid"].(string),ar["arid"].(string),"insert")
-			return er, e
+			if req.IsPublish == true {
+				_, e := l.svcCtx.ArticleMysqlModel.Insert(l.ctx, &model.Articles{
+					Mongoid:    ar["arid"].(string),
+					Title:      ar["title"].(string),
+					Fewcontent: ar["fewcontent"].(string),
+					Likes:      ar["likes"].(int64),
+					Views:      ar["views"].(int64),
+					Url:        ar["url"].(string),
+					Pubtime:    strconv.Itoa(int(ar["created"].(int64))),
+					Coverlinks: ar["coverlink"].(string),
+				})
+				l.ToUserMongo(ar["authorid"].(string), ar["arid"].(string), "insert")
+				return er, e
+			} else {
+				return er, nil
+			}
 		}
 	case "update":
 		if ar["isDelete"] == true {
 			_, errr := collection.DeleteOne(context.Background(), bson.M{"arid": ar["arid"]}, options.Delete().SetCollation(&options.Collation{
 				CaseLevel: false,
 			}))
-			l.ToUserMongo(ar["authorid"].(string),ar["arid"].(string),"delete")
+			l.ToUserMongo(ar["authorid"].(string), ar["arid"].(string), "delete")
 			e := l.svcCtx.ArticleMysqlModel.Delete(l.ctx, ar["arid"].(string))
 			return errr, e
 		} else {
@@ -235,10 +239,10 @@ func (l *UpdatecontentLogic) ToUserMongo(uid, arid, operation string) error {
 		return e
 	}
 	collection := client.Database("DB").Collection("userarticle")
-	res := collection.FindOne(context.Background(), bson.M{"uid": uid},options.FindOne())
+	res := collection.FindOne(context.Background(), bson.M{"uid": uid}, options.FindOne())
 	var got bson.M
-	er:=res.Decode(&got)
-	if er!=nil{
+	er := res.Decode(&got)
+	if er != nil {
 		return er
 	}
 	arlist := got["articles"].(bson.A)
@@ -250,9 +254,9 @@ func (l *UpdatecontentLogic) ToUserMongo(uid, arid, operation string) error {
 			return er
 		}
 	case "delete":
-		for i:=0;i<len(arlist);i++{
-			if arlist[i]==arid{
-				arlist=append( arlist[:i],arlist[i+1:]...)
+		for i := 0; i < len(arlist); i++ {
+			if arlist[i] == arid {
+				arlist = append(arlist[:i], arlist[i+1:]...)
 			}
 		}
 		_, er := collection.UpdateOne(context.Background(), bson.M{"uid": uid}, bson.M{"$set": bson.M{"articles": arlist}})
