@@ -234,4 +234,5 @@ type Toolsresp struct {
 type Tool struct {
 	Url   string `json:"url"`
 	Title string `json:"title"`
+	Img   string `json:"img, optional"`
 }
