@@ -9,6 +9,7 @@ import (
 	getardata "yourbackend/internal/handler/getardata"
 	getarticle "yourbackend/internal/handler/getarticle"
 	getbar "yourbackend/internal/handler/getbar"
+	getmylikes "yourbackend/internal/handler/getmylikes"
 	getsingledata "yourbackend/internal/handler/getsingledata"
 	likearticle "yourbackend/internal/handler/likearticle"
 	login "yourbackend/internal/handler/login"
@@ -237,5 +238,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: tools.ToolsHandler(serverCtx),
 			},
 		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/user/myLikes",
+				Handler: getmylikes.GetmylikesHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

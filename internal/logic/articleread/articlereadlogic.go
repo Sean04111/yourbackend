@@ -43,17 +43,22 @@ func (l *ArticlereadLogic) Articleread(req *types.Readarticlereq) (resp *types.R
 		errchan := make(chan error, 2)
 		go func() {
 			e := l.Artihandler(arbm)
-			errchan <- e
+			if e != nil {
+				errchan <- e
+			}
 			wg.Done()
 		}()
 		go func() {
 			errr := l.Userhanlder(arbm)
-			errchan <- errr
+			if errr != nil {
+				errchan <- errr
+			}
 			wg.Done()
 		}()
 		wg.Wait()
 		select {
 		case <-errchan:
+
 			return &types.Readarticleresp{
 				Status: 1,
 			}, nil
@@ -150,23 +155,23 @@ func (l *ArticlereadLogic) Artihandler(article bson.M) error {
 		}
 		daysdata[6] = 1
 	} else {
-		daysdata[6] = article["views"].(int64) + 1
+		daysdata[6] = daysdata[6].(int64) + 1
 	}
-	_, er := articlecollection.UpdateOne(context.Background(), bson.M{"arid": article["arid"].(string)}, bson.M{"$set": bson.M{"daysdata": daysdata, "views": article["views"].(int64) + 1}})
+	_, er := articlecollection.UpdateOne(context.Background(), bson.M{"arid": article["arid"].(string)}, bson.M{"$set": bson.M{"daysdata": daysdata, "views": article["views"].(int64) + 1, "lastrefresh": time.Now().Unix()}})
 	if er != nil {
 		return er
 	}
-	err :=l.svcCtx.ArticleMysqlModel.Update(l.ctx, &model.Articles{
+	err := l.svcCtx.ArticleMysqlModel.Update(l.ctx, &model.Articles{
 		Mongoid:    article["arid"].(string),
 		Title:      article["title"].(string),
 		Fewcontent: article["fewcontent"].(string),
 		Likes:      article["likes"].(int64),
-		Views:      article["views"].(int64),
+		Views:      article["views"].(int64) + 1,
 		Url:        article["url"].(string),
 		Pubtime:    strconv.Itoa(int(article["created"].(int64))),
 		Coverlinks: article["coverlink"].(string),
 	})
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -201,7 +206,7 @@ func (l *ArticlereadLogic) Userhanlder(article bson.M) error {
 		}
 		alldata[6] = alltoday
 	}
-	_, er := usercollection.UpdateOne(context.Background(), bson.M{"uid": gotuser["uid"]}, bson.M{"$set": bson.M{"alldata": alldata}})
+	_, er := usercollection.UpdateOne(context.Background(), bson.M{"uid": gotuser["uid"]}, bson.M{"$set": bson.M{"alldata": alldata, "lastrefresh": time.Now().Unix()}})
 	if er != nil {
 		return er
 	} else {

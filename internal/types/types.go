@@ -236,3 +236,15 @@ type Tool struct {
 	Title string `json:"title"`
 	Img   string `json:"img, optional"`
 }
+
+type Getmylikesresp struct {
+	Status    int  `json:"status"`
+	Datalikes []Ar `json:"Datalikes"`
+}
+
+type Ar struct {
+	ArticaName     string `json:"articleName"`
+	ArticalLink    string `json:"articleLink"`
+	ArticalImgLink string `json:"articleImgLink"`
+	ArticalID      string `json:"articleID"`
+}

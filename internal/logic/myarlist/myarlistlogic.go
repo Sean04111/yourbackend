@@ -55,7 +55,7 @@ func (l *MyarlistLogic) Myarlist(req *types.Myarlistreq) (resp *types.Myarlistre
 		re := r.FindOne(context.Background(), bson.M{"arid": res[i].Mongoid})
 		var got bson.M
 		re.Decode(&got)
-		if got["autherid"].(string) == l.ctx.Value("uid") {
+		if got["authorid"].(string) == l.ctx.Value("uid") {
 			modelres = append(modelres, types.Arti{
 				Id:          res[i].Mongoid,
 				Title:       res[i].Title,
@@ -72,7 +72,7 @@ func (l *MyarlistLogic) Myarlist(req *types.Myarlistreq) (resp *types.Myarlistre
 		Status: 0,
 		List:   modelres,
 	}, nil
-	return
+	
 }
 
 type Artic struct {

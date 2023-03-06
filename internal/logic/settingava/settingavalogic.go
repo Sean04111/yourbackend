@@ -16,7 +16,7 @@ type SettingavaLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
-	Img *multipart.FileHeader
+	Img    *multipart.FileHeader
 }
 
 func NewSettingavaLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SettingavaLogic {
@@ -27,65 +27,63 @@ func NewSettingavaLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Settin
 	}
 }
 
-func (l *SettingavaLogic) Settingava(req *types.Settingavareq) ( *types.Settingavaresp,  error) {
-	newimf,er:=os.Create("internal/static/ava/"+l.ctx.Value("uid").(string)+".jpg")
-	defer func ()  {
-		if e1:=newimf.Close();e1!=nil{
+func (l *SettingavaLogic) Settingava(req *types.Settingavareq) (*types.Settingavaresp, error) {
+	newimf, er := os.Create("internal/static/ava/" + l.ctx.Value("uid").(string) + ".jpg")
+	defer func() {
+		if e1 := newimf.Close(); e1 != nil {
 			panic(e1)
-		}	
+		}
 	}()
-	if er!=nil{
+	if er != nil {
 		return &types.Settingavaresp{
 			Status: 1,
-		},nil
+		}, nil
 	}
-	file,e:=l.Img.Open()
+	file, e := l.Img.Open()
 	defer func() {
-		if e2:=file.Close();e2!=nil{
+		if e2 := file.Close(); e2 != nil {
 			panic(e2)
 		}
 	}()
-	if e!=nil{
+	if e != nil {
 		return &types.Settingavaresp{
 			Status: 1,
-		},nil
+		}, nil
 	}
-	date:=make([]byte,1000000)
-	_,a:=file.Read(date)
-	if a!=nil{
+	date := make([]byte, 1000000)
+	_, a := file.Read(date)
+	if a != nil {
 		return &types.Settingavaresp{
 			Status: 1,
-		},nil
+		}, nil
 	}
-	_,b:=newimf.Write(date)
-	if b!=nil{
+	_, b := newimf.Write(date)
+	if b != nil {
 		return &types.Settingavaresp{
 			Status: 1,
-		},nil
+		}, nil
 	}
-	link:="127.0.0.1:8888/internal/ava/"+l.ctx.Value("uid").(string)+".jpg"//The static router needed!
-	gotuser,err:=l.svcCtx.MysqlModel.FindOne(l.ctx,l.ctx.Value("email").(string))
-	if err!=nil{
+	link := "127.0.0.1:9090/" + l.ctx.Value("uid").(string) + ".jpg" //The static router needed!
+	gotuser, err := l.svcCtx.MysqlModel.FindOne(l.ctx, l.ctx.Value("email").(string))
+	if err != nil {
 		return &types.Settingavaresp{
 			Status: 1,
-		},nil
+		}, nil
 	}
-	if l.svcCtx.MysqlModel.Update(l.ctx,&model.User{
-		Uid: gotuser.Uid,
-		Email: gotuser.Email,
-		Password: gotuser.Password,
-		Name:gotuser.Name,
+	if l.svcCtx.MysqlModel.Update(l.ctx, &model.User{
+		Uid:        gotuser.Uid,
+		Email:      gotuser.Email,
+		Password:   gotuser.Password,
+		Name:       gotuser.Name,
 		AvatarLink: link,
 		Profession: gotuser.Profession,
-		Type:gotuser.Type,
-	})!=nil{
+		Type:       gotuser.Type,
+	}) != nil {
 		return &types.Settingavaresp{
-			Status :1,
-		},nil
+			Status: 1,
+		}, nil
 	}
 	return &types.Settingavaresp{
 		Status: 0,
-	},nil
+	}, nil
 }
-
-

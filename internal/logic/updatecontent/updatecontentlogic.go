@@ -311,7 +311,7 @@ func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, ti
 	bm["ispublish"] = ispublish
 	bm["lastrefresh"] = time
 	bm["isDelete"] = isDelete
-	bm["url"] = l.svcCtx.Config.Url.Url + "reading/?ar_id" + arid
+	bm["url"] = l.svcCtx.Config.Url.Url + "/api/reading/content/?id" + arid
 	bm["daysdata"] = [7]int{}
 	return bm, arid, title, fewcontent
 }

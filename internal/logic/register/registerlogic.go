@@ -123,7 +123,6 @@ func (l *RegisterLogic) FromRedis(keyword string) (string, error) {
 	})
 	code, e := redisclient.Get(keyword).Result()
 	if e != nil {
-		log.Fatalln("[Redis] Failed to get data from redis")
 		return "", e
 	}
 	return code, nil

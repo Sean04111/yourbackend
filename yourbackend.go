@@ -28,8 +28,8 @@ func main() {
 	handler.RegisterHandlers(server, ctx)
 	go func() {
 		c := gin.Default()
-		c.Static("/", "./internal/ava")
-		c.Run()
+		c.Static("/", "./internal/static/ava")
+		c.Run(":9090")
 	}()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

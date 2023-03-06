@@ -35,7 +35,7 @@ func (l *GetardataLogic) Getardata() (resp *types.Getardataresp, err error) {
 		}, nil
 	}
 	collection := mongoclient.Database("DB").Collection("userarticle")
-	res := collection.FindOne(context.Background(), bson.M{"uid": uid})
+	res := collection.FindOne(context.TODO(), bson.M{"uid": uid})
 	var got bson.M
 	er := res.Decode(&got)
 	if er != nil {
@@ -46,7 +46,7 @@ func (l *GetardataLogic) Getardata() (resp *types.Getardataresp, err error) {
 	datalist := got["alldata"].(bson.A)
 	var datas []int64
 	for _, k := range datalist {
-		datas = append(datas, k.(int64))
+		datas = append(datas, int64(k.(int32)))
 	}
 	return &types.Getardataresp{
 		Status:   0,
