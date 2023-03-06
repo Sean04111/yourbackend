@@ -156,3 +156,82 @@ type Readarticleresp struct {
 	Title   string `json:"title"`
 	IsEdit  bool   `json:"isEdit"`
 }
+
+type Getardataresp struct {
+	Status   int      `json:"status"`
+	Bardata  []int64  `json:"barData"`
+	Barlabel []string `json:"barLabel"`
+}
+
+type Getsingledatareq struct {
+	Id string `form:"id"`
+}
+
+type Getsingledataresp struct {
+	Status    int      `json:"status"`
+	LineData  []int64  `json:""lineData"`
+	LineLable []string `json:"lineLable"`
+}
+
+type Tablenameresp struct {
+	Status     int    `json:"status"`
+	Chartlable string `json:"chartlable"`
+}
+
+type Myarlistreq struct {
+	Input string `form:"input,optional"`
+	Num   int    `form:"num"`
+}
+
+type Myarlistresp struct {
+	Status int    `json:"status"`
+	List   []Arti `json:"list"`
+}
+
+type Arti struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Url         string `json:"url"`
+	Description string `json:"description"`
+	Likes       int    `json:"likes"`
+	Reads       int    `json:"reads"`
+	Pubtime     string `json:"pubtime"`
+	Imglink     string `json:"imglink"`
+}
+
+type Likearticlereq struct {
+	Active bool   `json:"active"`
+	Id     string `json:"id"`
+}
+
+type Likearticleresp struct {
+	Status int `json:"status"`
+}
+
+type Getbarreq struct {
+	Id   string `form:"id"`
+	User string `form:"user,optional"`
+}
+
+type Getbarresp struct {
+	Status  int       `json:"status"`
+	Options []Eachbar `json:"options"`
+}
+
+type Eachbar struct {
+	Icon          string `json:"icon"`
+	Counts        int64  `json:"counts"`
+	Active        bool   `json:"active"`
+	ActiveIcon    string `json:"activeIcon"`
+	DisActiveIcon string `json:"disactiveIcon"`
+}
+
+type Toolsresp struct {
+	Status int    `json:"status"`
+	Items  []Tool `json:"items"`
+}
+
+type Tool struct {
+	Url   string `json:"url"`
+	Title string `json:"title"`
+}

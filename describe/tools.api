@@ -1,0 +1,25 @@
+syntax = "v2"
+info(
+    title: "tools"
+    desc: "get tools"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    toolsresp struct {
+        Status int `json:"status"`
+        Items []Tool `json:"items"`
+    }
+    Tool struct{
+        Url string `json:"url"`
+        Title string `json:"title"`
+    }
+)
+@server(
+    group : tools
+)
+service yourbackend-api {
+    @handler tools
+    get /api/article/getTools returns(toolsresp)
+}

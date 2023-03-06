@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gin-gonic/gin"
 
 	"yourbackend/internal/config"
 	"yourbackend/internal/handler"
@@ -25,7 +26,11 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
-
+	go func() {
+		c := gin.Default()
+		c.Static("/", "./internal/ava")
+		c.Run()
+	}()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
 

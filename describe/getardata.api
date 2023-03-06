@@ -1,0 +1,25 @@
+syntax = "v2"
+info(
+    title: "getardata"
+    desc: "get article data"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    getardataresp struct{
+        Status int `json:"status"`
+        Bardata []int64 `json:"barData"`
+        Barlabel []string `json:"barLabel"`
+    }
+)
+@server(
+    jwt:Auth
+    group : getardata
+)
+service yourbackend-api {
+    @handler getardata
+    get /allardatas returns(getardataresp)
+}
+
+

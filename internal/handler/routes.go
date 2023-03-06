@@ -6,14 +6,21 @@ import (
 
 	articleread "yourbackend/internal/handler/articleread"
 	baseinfo "yourbackend/internal/handler/baseinfo"
+	getardata "yourbackend/internal/handler/getardata"
 	getarticle "yourbackend/internal/handler/getarticle"
+	getbar "yourbackend/internal/handler/getbar"
+	getsingledata "yourbackend/internal/handler/getsingledata"
+	likearticle "yourbackend/internal/handler/likearticle"
 	login "yourbackend/internal/handler/login"
+	myarlist "yourbackend/internal/handler/myarlist"
 	pubkey "yourbackend/internal/handler/pubkey"
 	refreshToken "yourbackend/internal/handler/refreshToken"
 	register "yourbackend/internal/handler/register"
 	searcharticle "yourbackend/internal/handler/searcharticle"
 	settingava "yourbackend/internal/handler/settingava"
 	settingbase "yourbackend/internal/handler/settingbase"
+	tablename "yourbackend/internal/handler/tablename"
+	tools "yourbackend/internal/handler/tools"
 	updatecontent "yourbackend/internal/handler/updatecontent"
 	updatepwd "yourbackend/internal/handler/updatepwd"
 	verification_code "yourbackend/internal/handler/verification_code"
@@ -153,6 +160,81 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/api/reading/content",
 				Handler: articleread.ArticlereadHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/allardatas",
+				Handler: getardata.GetardataHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/ardata",
+				Handler: getsingledata.GetsingledataHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/ardatalable",
+				Handler: tablename.TablenameHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/myarlist",
+				Handler: myarlist.MyarlistHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/reading/like",
+				Handler: likearticle.LikearticleHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/reading/likeinfo",
+				Handler: getbar.GetbarHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/article/getTools",
+				Handler: tools.ToolsHandler(serverCtx),
 			},
 		},
 	)

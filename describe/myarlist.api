@@ -1,0 +1,38 @@
+syntax = "v2"
+info(
+    title: "myarlist"
+    desc: "get my article list"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(   
+    myarlistreq struct{
+        Input string `form:"input,optional"`
+        Num int `form:"num"`
+    }  
+    myarlistresp struct{
+        Status int `json:"status"`
+        List []Arti `json:"list"`
+    }
+    Arti struct{
+        Id string `json:"id"`
+       Title string `json:"title"`
+       Url string `json:"url"`
+       Description string `json:"description"`
+       Likes int `json:"likes"`
+       Reads int `json:"reads"`
+       Pubtime string `json:"pubtime"`
+        Imglink string `json:"imglink"`
+    }
+)
+@server(
+    jwt:Auth
+    group: myarlist
+)
+service yourbackend-api {
+    @handler myarlist
+    get /myarlist(myarlistreq) returns(myarlistresp)
+}
+
+
