@@ -189,7 +189,7 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string, req *types.Art
 			return errr, e
 		} else {
 			_, er := collection.InsertOne(context.Background(), ar)
-			if req.IsPublish == true {
+			if req.IsPublish  {
 				_, e := l.svcCtx.ArticleMysqlModel.Insert(l.ctx, &model.Articles{
 					Mongoid:    ar["arid"].(string),
 					Title:      ar["title"].(string),
