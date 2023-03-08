@@ -9,7 +9,7 @@ info(
 type(
     registerreq{
         Email string `json:"email"`
-        Name string `json:"name"` 
+        Name string `json:"name,optional"` 
         Pass string `json:"pass"`
         Code string `json:"code"`
         Check string `json:"check"`
@@ -26,6 +26,6 @@ type(
 )
 service yourbackend-api {
     @handler register
-    post /api/register(registerreq) returns(registerresp)
+    post /api/reguser(registerreq) returns(registerresp)
 }
 

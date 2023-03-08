@@ -11,6 +11,7 @@ import (
 	getbar "yourbackend/internal/handler/getbar"
 	getmylikes "yourbackend/internal/handler/getmylikes"
 	getsingledata "yourbackend/internal/handler/getsingledata"
+	infotable "yourbackend/internal/handler/infotable"
 	likearticle "yourbackend/internal/handler/likearticle"
 	login "yourbackend/internal/handler/login"
 	myarlist "yourbackend/internal/handler/myarlist"
@@ -45,7 +46,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/register",
+				Path:    "/api/reguser",
 				Handler: register.RegisterHandler(serverCtx),
 			},
 		},
@@ -128,7 +129,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/updatecontent",
+				Path:    "/my/updatacontent",
 				Handler: updatecontent.UpdatecontentHandler(serverCtx),
 			},
 		},
@@ -169,7 +170,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/allardatas",
+				Path:    "/my/allardatas",
 				Handler: getardata.GetardataHandler(serverCtx),
 			},
 		},
@@ -202,7 +203,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/myarlist",
+				Path:    "/my/myarlist",
 				Handler: myarlist.MyarlistHandler(serverCtx),
 			},
 		},
@@ -246,6 +247,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/user/myLikes",
 				Handler: getmylikes.GetmylikesHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/user/infoTabs",
+				Handler: infotable.InfotableHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

@@ -10,7 +10,7 @@ type(
     getardataresp struct{
         Status int `json:"status"`
         Bardata []int64 `json:"barData"`
-        Barlabel []string `json:"barLabel"`
+        Barlabel []string `json:"barLable"`
     }
 )
 @server(
@@ -19,7 +19,7 @@ type(
 )
 service yourbackend-api {
     @handler getardata
-    get /allardatas returns(getardataresp)
+    get /my/allardatas returns(getardataresp)
 }
 
 

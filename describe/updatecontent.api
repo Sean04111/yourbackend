@@ -10,12 +10,12 @@ type(
     articlereq struct{  
         Arid string `json:"arid"`
         Content string `json:"content"`
-        IsPublish bool `json:"ispublish"`
+        IsPublish bool `json:"isPublish"`
     }
     articleresp struct{
         Status int `json:"status"`
         Arid string `json:"arid"`
-        IsPublish bool `json:"ispublish"`
+        IsPublish bool `json:"isPublish"`
     }
 )
 @server(
@@ -24,7 +24,7 @@ type(
 )
 service yourbackend-api {
     @handler updatecontent
-    post /updatecontent (articlereq) returns(articleresp)
+    post /my/updatacontent (articlereq) returns(articleresp)
 }
 
 

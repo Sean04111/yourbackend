@@ -36,6 +36,7 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerresp, err error) {
 	//get the code for user
+	req.Code,req.Check=req.Check,req.Code
 	usercode, e := l.FromRedis(req.Email)
 	if e != nil {
 		return &types.Registerresp{
@@ -106,7 +107,7 @@ func (l *RegisterLogic) Register(req *types.Registerreq) (resp *types.Registerre
 				Status:      0,
 				Accesstoken: Jwttoken,
 				Expires:     strconv.Itoa(int(l.svcCtx.Config.Auth.AccessExpire + now)), //too long !
-				Name:        req.Name,
+				Name:        "new user",
 			}, nil
 		} else {
 			return &types.Registerresp{

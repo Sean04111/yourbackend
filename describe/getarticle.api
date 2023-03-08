@@ -12,7 +12,7 @@ type (
     }
     getarticleresp struct{
         Status int `json:"status"`
-        Articlelist []GetArticle `json:"articallist"`
+        Articlelist []GetArticle `json:"list"`
     }
     GetArticle struct {
        Id string `json:"id"`
@@ -21,7 +21,7 @@ type (
        Description string `json:"description"`
        Likes int `json:"likes"`
        Reads int `json:"reads"`
-       Pubtime string `json:"pubtime"`
+       Pubtime string `json:"pubTime"`
         Imglink string `json:"imglink"`
     }
 )

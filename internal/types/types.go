@@ -12,7 +12,7 @@ type Coderesp struct {
 
 type Registerreq struct {
 	Email string `json:"email"`
-	Name  string `json:"name"`
+	Name  string `json:"name,optional"`
 	Pass  string `json:"pass"`
 	Code  string `json:"code"`
 	Check string `json:"check"`
@@ -97,22 +97,22 @@ type Settingavaresp struct {
 type Articlereq struct {
 	Arid      string `json:"arid"`
 	Content   string `json:"content"`
-	IsPublish bool   `json:"ispublish"`
+	IsPublish bool   `json:"isPublish"`
 }
 
 type Articleresp struct {
 	Status    int    `json:"status"`
 	Arid      string `json:"arid"`
-	IsPublish bool   `json:"ispublish"`
+	IsPublish bool   `json:"isPublish"`
 }
 
 type Searchreq struct {
-	Articlename string `json:"articlename"`
+	Articlename string `json:"input"`
 }
 
 type Searchresp struct {
 	Status      int       `json:"status"`
-	Articlelist []Article `json:"articallist"`
+	Articlelist []Article `json:"list"`
 }
 
 type Article struct {
@@ -122,7 +122,7 @@ type Article struct {
 	Description string `json:"description"`
 	Likes       int    `json:"likes"`
 	Reads       int    `json:"reads"`
-	Pubtime     string `json:"pubtime"`
+	Pubtime     string `json:"pubTime"`
 	Imglink     string `json:"imglink"`
 }
 
@@ -131,7 +131,7 @@ type Getarticlereq struct {
 
 type Getarticleresp struct {
 	Status      int          `json:"status"`
-	Articlelist []GetArticle `json:"articallist"`
+	Articlelist []GetArticle `json:"list"`
 }
 
 type GetArticle struct {
@@ -141,7 +141,7 @@ type GetArticle struct {
 	Description string `json:"description"`
 	Likes       int    `json:"likes"`
 	Reads       int    `json:"reads"`
-	Pubtime     string `json:"pubtime"`
+	Pubtime     string `json:"pubTime"`
 	Imglink     string `json:"imglink"`
 }
 
@@ -160,7 +160,7 @@ type Readarticleresp struct {
 type Getardataresp struct {
 	Status   int      `json:"status"`
 	Bardata  []int64  `json:"barData"`
-	Barlabel []string `json:"barLabel"`
+	Barlabel []string `json:"barLable"`
 }
 
 type Getsingledatareq struct {
@@ -180,7 +180,7 @@ type Tablenameresp struct {
 
 type Myarlistreq struct {
 	Input string `form:"input,optional"`
-	Num   int    `form:"num"`
+	Num   int    `form:"num,optional"`
 }
 
 type Myarlistresp struct {
@@ -247,4 +247,16 @@ type Ar struct {
 	ArticalLink    string `json:"articleLink"`
 	ArticalImgLink string `json:"articleImgLink"`
 	ArticalID      string `json:"articleID"`
+}
+
+type Infotableresp struct {
+	Status int         `json:"status"`
+	Tabs   []SingleTab `json:"tabs"`
+}
+
+type SingleTab struct {
+	TabName       string `json:"tabName"`
+	ComponentName string `json:" componentName"`
+	TabUrl        string `json:"tabUrl"`
+	TabIcon       string `json:"tabIcon"`
 }

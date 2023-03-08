@@ -9,7 +9,7 @@ info(
 type(   
     myarlistreq struct{
         Input string `form:"input,optional"`
-        Num int `form:"num"`
+        Num int `form:"num,optional"`
     }  
     myarlistresp struct{
         Status int `json:"status"`
@@ -32,7 +32,7 @@ type(
 )
 service yourbackend-api {
     @handler myarlist
-    get /myarlist(myarlistreq) returns(myarlistresp)
+    get /my/myarlist(myarlistreq) returns(myarlistresp)
 }
 
 

@@ -63,7 +63,7 @@ func (l *SettingavaLogic) Settingava(req *types.Settingavareq) (*types.Settingav
 			Status: 1,
 		}, nil
 	}
-	link := "127.0.0.1:9090/" + l.ctx.Value("uid").(string) + ".jpg" //The static router needed!
+	link := "127.0.0.1:9090/ava" + l.ctx.Value("uid").(string) + ".jpg" //The static router needed!
 	gotuser, err := l.svcCtx.MysqlModel.FindOne(l.ctx, l.ctx.Value("email").(string))
 	if err != nil {
 		return &types.Settingavaresp{

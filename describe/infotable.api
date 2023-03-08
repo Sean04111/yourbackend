@@ -1,0 +1,30 @@
+syntax = "v2"
+info(
+    title: "info table"
+    desc: "infomation table"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    infotableresp struct{
+        Status int `json:"status"`
+        Tabs []SingleTab `json:"tabs"`
+
+    }
+    SingleTab struct {
+        TabName string `json:"tabName"`
+        ComponentName string `json:" componentName"`
+        TabUrl string `json:"tabUrl"`
+        TabIcon string `json:"tabIcon"`
+    }
+)
+@server(
+    jwt:Auth
+    group:infotable
+)
+service yourbackend-api {
+    @handler infotable
+    get /user/infoTabs returns(infotableresp)
+}
+

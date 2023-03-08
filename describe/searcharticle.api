@@ -8,11 +8,11 @@ info(
 )
 type(
     searchreq struct{
-        Articlename string `json:"articlename"`
+        Articlename string `json:"input"`
     }
     searchresp struct{
         Status int `json:"status"`
-        Articlelist []Article `json:"articallist"`
+        Articlelist []Article `json:"list"`
     }
     Article struct {
        Id string `json:"id"`
@@ -21,7 +21,7 @@ type(
        Description string `json:"description"`
        Likes int `json:"likes"`
        Reads int `json:"reads"`
-       Pubtime string `json:"pubtime"`
+       Pubtime string `json:"pubTime"`
         Imglink string `json:"imglink"`
     }
 )
