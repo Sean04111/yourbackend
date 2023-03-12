@@ -8,17 +8,17 @@ Auth:
   AccessSecret: 123e4567-e89b-12d3-a456-426655440000
   AccessExpire: 10000000000
 Redis:
-  Addr: 121.36.131.50:6379
+  Addr: @redislink
   DB: 0
 ES:
-  Addr: http://121.36.131.50:9200
+  Addr: @eslink
 Mongo:
-  Addr: mongodb://121.36.131.50:27017
+  Addr: @mongoip
 Url:
   Url: http://127.0.0.1:8888
 ## ms
 Tolerance:
   DBTime: 100
 ChatGPT:
-  Key: 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
-  TargetServer: http://107.150.111.138:3389
+  Key: @chatgptkey
+  TargetServer: @server
