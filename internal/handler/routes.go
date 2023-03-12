@@ -4,11 +4,13 @@ package handler
 import (
 	"net/http"
 
+	AI "yourbackend/internal/handler/AI"
 	articleread "yourbackend/internal/handler/articleread"
 	baseinfo "yourbackend/internal/handler/baseinfo"
 	getardata "yourbackend/internal/handler/getardata"
 	getarticle "yourbackend/internal/handler/getarticle"
 	getbar "yourbackend/internal/handler/getbar"
+	getdraft "yourbackend/internal/handler/getdraft"
 	getmylikes "yourbackend/internal/handler/getmylikes"
 	getsingledata "yourbackend/internal/handler/getsingledata"
 	infotable "yourbackend/internal/handler/infotable"
@@ -129,7 +131,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/my/updatacontent",
+				Path:    "/my/updata.content",
 				Handler: updatecontent.UpdatecontentHandler(serverCtx),
 			},
 		},
@@ -192,7 +194,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/ardatalable",
+				Path:    "/my/ardatalable",
 				Handler: tablename.TablenameHandler(serverCtx),
 			},
 		},
@@ -258,6 +260,28 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/user/infoTabs",
 				Handler: infotable.InfotableHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/my/draft",
+				Handler: getdraft.GetdraftHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/my/chat",
+				Handler: AI.AIHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

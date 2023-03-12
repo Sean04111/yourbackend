@@ -4,29 +4,31 @@ import "github.com/zeromicro/go-zero/rest"
 
 type Config struct {
 	rest.RestConf
-	DB struct{
+	DB struct {
 		Mysql string
 	}
-	Auth struct{
+	Auth struct {
 		AccessSecret string
 		AccessExpire int64
 	}
-	Redis struct{
-		Addr string 
-		DB int
+	Redis struct {
+		Addr string
+		DB   int
 	}
-	ES struct{
+	ES struct {
 		Addr string
 	}
-	Mongo struct{
+	Mongo struct {
 		Addr string
 	}
 	Url struct {
 		Url string
 	}
-	Tolerance struct{
+	Tolerance struct {
 		DBTime int64
 	}
+	ChatGPT struct {
+		Key          string
+		TargetServer string
+	}
 }
-
-

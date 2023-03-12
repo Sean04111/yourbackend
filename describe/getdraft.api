@@ -1,0 +1,27 @@
+syntax = "v2"
+info(
+    title: "getdraft"
+    desc: "get Draft"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    getdraftreq struct{
+        Arid string `json:"arid"`
+    }
+    getdraftresp struct{
+        Status int `json:"status"`
+        Text string `json:"text"`
+        Id string `json:"id"`
+        IsPublish bool `json:"isPublish"`
+    }
+)
+@server(
+    jwt:Auth
+    group: getdraft
+)
+service yourbackend-api {
+    @handler getdraft
+    post /my/draft(getdraftreq) returns(getdraftresp)
+}

@@ -71,16 +71,16 @@ type Baseinfor struct {
 
 type Info struct {
 	AvatarLink string `json:"avatarLink"`
-	UserName   string `json:"username"`
+	UserName   string `json:"userName"`
 	Profession string `json:"profession"`
-	Usermail   string `json:"usermail"`
+	Usermail   string `json:"userMail"`
 	Type       string `json:"type"`
 }
 
 type Settingbasereq struct {
 	Name       string `json:"name"`
-	Profession string `json:"profession"`
-	Type       string `json:"type"`
+	Profession string `json:"profession,optional"`
+	Type       string `json:"type,optional"`
 }
 
 type Settingbaseresp struct {
@@ -239,14 +239,14 @@ type Tool struct {
 
 type Getmylikesresp struct {
 	Status    int  `json:"status"`
-	Datalikes []Ar `json:"Datalikes"`
+	Datalikes []Ar `json:"dataLikes"`
 }
 
 type Ar struct {
-	ArticaName     string `json:"articleName"`
-	ArticalLink    string `json:"articleLink"`
-	ArticalImgLink string `json:"articleImgLink"`
-	ArticalID      string `json:"articleID"`
+	ArticaName     string `json:"articaName"`
+	ArticalLink    string `json:"articalLink"`
+	ArticalImgLink string `json:"articalImgLink"`
+	ArticalID      string `json:"articalID"`
 }
 
 type Infotableresp struct {
@@ -256,7 +256,33 @@ type Infotableresp struct {
 
 type SingleTab struct {
 	TabName       string `json:"tabName"`
-	ComponentName string `json:" componentName"`
+	ComponentName string `json:"componentName"`
 	TabUrl        string `json:"tabUrl"`
 	TabIcon       string `json:"tabIcon"`
+}
+
+type Getdraftreq struct {
+	Arid string `json:"arid"`
+}
+
+type Getdraftresp struct {
+	Status    int    `json:"status"`
+	Text      string `json:"text"`
+	Id        string `json:"id"`
+	IsPublish bool   `json:"isPublish"`
+}
+
+type AIreq struct {
+	Temerature       float64  `json:"Temperature"`
+	MaxLength        float64  `json:"MaxLength"`
+	TopP             float64  `json:"TopP"`
+	FrequencyPenalty float64  `json:"frequencyPenalty"`
+	PresencePenalty  float64  `json:"presencePenalty"`
+	Prompt           []string `json:"prompt"`
+}
+
+type AIresp struct {
+	Status       int    `json:"status"`
+	Chat         string `json:"chat"`
+	FinishReason string `json:"finishreason"`
 }

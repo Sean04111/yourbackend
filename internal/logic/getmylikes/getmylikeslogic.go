@@ -43,7 +43,7 @@ func (l *GetmylikesLogic) Getmylikes() (resp *types.Getmylikesresp, err error) {
 		},nil
 	}
 	var ans []types.Ar
-	for _,k:=range got["articles"].(bson.A){
+	for _,k:=range got["likes"].(bson.A){
 		res,err:=l.svcCtx.ArticleMysqlModel.FindOne(l.ctx,k.(string))
 		if err!=nil{
 			return &types.Getmylikesresp{

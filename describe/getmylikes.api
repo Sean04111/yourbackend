@@ -9,13 +9,13 @@ info(
 type(
     getmylikesresp struct{
         Status int `json:"status"`
-        Datalikes []Ar `json:"Datalikes"`
+        Datalikes []Ar `json:"dataLikes"`
     }
     Ar struct{
-            articaName string `json:"articleName"`
-            articalLink string `json:"articleLink"`
-            articalImgLink string `json:"articleImgLink"`
-            articalID string `json:"articleID"`
+            articaName string `json:"articaName"`
+            articalLink string `json:"articalLink"`
+            articalImgLink string `json:"articalImgLink"`
+            articalID string `json:"articalID"`
         }
 )
 @server(

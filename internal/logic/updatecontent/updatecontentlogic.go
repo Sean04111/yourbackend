@@ -3,6 +3,7 @@ package updatecontent
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -40,6 +41,8 @@ func NewUpdatecontentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 
 func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articleresp, error) {
 	gotuser, e := l.svcCtx.MysqlModel.FindOne(l.ctx, l.ctx.Value("email").(string))
+	isPublish:=req.IsPublish
+	content:=req.Content
 	if req.Arid == "" {
 		if e != nil {
 			return &types.Articleresp{
@@ -52,7 +55,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		errchan := make(chan error, 2)
 		go func() {
 			defer wg.Done()
-			err := l.ToES(arid, title, fewcontent, "insert", req.Content == "")
+			err := l.ToES(arid, title, fewcontent, "insert", content == "")
 			if err != nil {
 				errchan <- err
 			} else {
@@ -61,7 +64,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		}()
 		go func() {
 			defer wg.Done()
-			er1, er2 := l.ToMongo(bson, "insert", req)
+			er1, er2 := l.ToMongo(bson, "insert", isPublish)
 			if er1 != nil {
 				errchan <- er1
 			}
@@ -91,7 +94,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		wg.Add(2)
 		go func() {
 			defer wg.Done()
-			err1, err2 := l.ToMongo(bson, "update", req)
+			err1, err2 := l.ToMongo(bson, "update", isPublish)
 			if err1 != nil {
 				errchan <- err1
 			}
@@ -103,7 +106,7 @@ func (l *UpdatecontentLogic) Updatecontent(req *types.Articlereq) (*types.Articl
 		}()
 		go func() {
 			defer wg.Done()
-			err := l.ToES(arid, title, fewcontent, "update", req.Content == "")
+			err := l.ToES(arid, title, fewcontent, "update", content == "")
 			if err != nil {
 				errchan <- err
 			} else {
@@ -171,7 +174,7 @@ func (l *UpdatecontentLogic) ToES(mongoid, title, fewcontent, operation string, 
 }
 
 //The first error id for mongoDB the second error is for mysql
-func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string, req *types.Articlereq) (error, error) {
+func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string, IsPublish bool) (error, error) {
 	clientops := options.Client().ApplyURI(l.svcCtx.Config.Mongo.Addr)
 	mongoclient, err := mongo.Connect(context.TODO(), clientops)
 	if err != nil {
@@ -190,21 +193,8 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string, req *types.Art
 		} else {
 			_, er := collection.InsertOne(context.Background(), ar)
 			l.ToUserMongo(ar["authorid"].(string), ar["arid"].(string), "insert")
-			if req.IsPublish  {
-				_, e := l.svcCtx.ArticleMysqlModel.Insert(l.ctx, &model.Articles{
-					Mongoid:    ar["arid"].(string),
-					Title:      ar["title"].(string),
-					Fewcontent: ar["fewcontent"].(string),
-					Likes:      ar["likes"].(int64),
-					Views:      ar["views"].(int64),
-					Url:        ar["url"].(string),
-					Pubtime:    strconv.Itoa(int(ar["created"].(int64))),
-					Coverlinks: ar["coverlink"].(string),
-				})
-				return er, e
-			} else {
+			fmt.Println(IsPublish)
 				return er, nil
-			}
 		}
 	case "update":
 		if ar["isDelete"] == true {
@@ -217,6 +207,19 @@ func (l *UpdatecontentLogic) ToMongo(ar bson.M, operation string, req *types.Art
 		} else {
 			//!
 			_, e := collection.UpdateOne(context.Background(), bson.M{"arid": ar["arid"]}, bson.M{"$set": bson.M{"content": ar["content"], "created": ar["created"], "ispublish": ar["ispublish"], "lastrefresh": ar["lastrefresh"], "fewcontent": ar["fewcontent"], "isDelete": ar["isDelete"]}}, options.Update().SetUpsert(true))
+			if IsPublish {
+				_, e := l.svcCtx.ArticleMysqlModel.Insert(l.ctx, &model.Articles{
+					Mongoid:    ar["arid"].(string),
+					Title:      ar["title"].(string),
+					Fewcontent: ar["fewcontent"].(string),
+					Likes:      ar["likes"].(int64),
+					Views:      ar["views"].(int64),
+					Url:        ar["url"].(string),
+					Pubtime:    strconv.Itoa(int(ar["created"].(int64))),
+					Coverlinks: ar["coverlink"].(string),
+				})
+				return nil, e
+			}
 			er := l.svcCtx.ArticleMysqlModel.Update(l.ctx, &model.Articles{
 				Mongoid:    ar["arid"].(string),
 				Title:      ar["title"].(string),
@@ -311,7 +314,7 @@ func (l *UpdatecontentLogic) BsonMFiller(content, cover, author, arid string, ti
 	bm["ispublish"] = ispublish
 	bm["lastrefresh"] = time
 	bm["isDelete"] = isDelete
-	bm["url"] = l.svcCtx.Config.Url.Url + "/api/reading/content/?id" + arid
+	bm["url"] = l.svcCtx.Config.Url.Url + "/api/reading/content/?id=" + arid
 	bm["daysdata"] = [7]int{}
 	return bm, arid, title, fewcontent
 }

@@ -3,6 +3,7 @@ package searcharticle
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 
 	"yourbackend/internal/model"
@@ -35,10 +36,10 @@ func (l *SearchbytitleLogic) Searchbytitle(req *types.Searchreq) (resp *types.Se
 			Status: 1,
 		}, nil
 	}
-	if len(l.Catcher)>20{
+	if len(l.Catcher) > 20 {
 		return &types.Searchresp{
 			Status: 1,
-		},nil
+		}, nil
 	}
 	var modelres []types.Article
 	for i := 0; i < len(res); i++ {
@@ -74,8 +75,7 @@ func (l *SearchbytitleLogic) FromES(keyword string) ([]*model.Articles, error) {
 	searchresult, er := esclient.Search().Index("article").Query(matchquery).From(0).Size(10).Do(context.TODO())
 	if er != nil {
 		return nil, er
-	}else 
-	if searchresult.TotalHits() > 0 {
+	} else if searchresult.TotalHits() > 0 {
 		var got Arti
 		for _, item := range searchresult.Each(reflect.TypeOf(got)) {
 			if t, ok := item.(Arti); ok {
@@ -83,16 +83,16 @@ func (l *SearchbytitleLogic) FromES(keyword string) ([]*model.Articles, error) {
 			}
 		}
 		var Res []*model.Articles
-		for i := 0; i < len(l.Catcher); i++ {
-			res, e := l.svcCtx.ArticleMysqlModel.FindOne(l.ctx, l.Catcher[i])
+		for _, k := range l.Catcher {
+			res, e := l.svcCtx.ArticleMysqlModel.FindOne(l.ctx, k)
 			if e != nil {
+				fmt.Println("出错", e)
 				return nil, e
 			}
 			Res = append(Res, res)
 		}
-		return Res,nil
+		return Res, nil
 	} else {
 		return nil, errors.New("NoMatch")
 	}
 }
-

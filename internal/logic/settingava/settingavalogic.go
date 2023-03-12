@@ -2,6 +2,7 @@ package settingava
 
 import (
 	"context"
+	"fmt"
 	"mime/multipart"
 	"os"
 
@@ -28,10 +29,10 @@ func NewSettingavaLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Settin
 }
 
 func (l *SettingavaLogic) Settingava(req *types.Settingavareq) (*types.Settingavaresp, error) {
-	newimf, er := os.Create("internal/static/ava/" + l.ctx.Value("uid").(string) + ".jpg")
+	newimf, er := os.Create("./internal/static/ava/" + l.ctx.Value("uid").(string) + ".jpg")
 	defer func() {
 		if e1 := newimf.Close(); e1 != nil {
-			panic(e1)
+			fmt.Println("错误",e1)
 		}
 	}()
 	if er != nil {
@@ -42,32 +43,32 @@ func (l *SettingavaLogic) Settingava(req *types.Settingavareq) (*types.Settingav
 	file, e := l.Img.Open()
 	defer func() {
 		if e2 := file.Close(); e2 != nil {
-			panic(e2)
+			fmt.Println("错了",e2)
 		}
 	}()
 	if e != nil {
 		return &types.Settingavaresp{
-			Status: 1,
+			Status: 2,
 		}, nil
 	}
 	date := make([]byte, 1000000)
 	_, a := file.Read(date)
 	if a != nil {
 		return &types.Settingavaresp{
-			Status: 1,
+			Status: 3,
 		}, nil
 	}
 	_, b := newimf.Write(date)
 	if b != nil {
 		return &types.Settingavaresp{
-			Status: 1,
+			Status: 4,
 		}, nil
 	}
-	link := "127.0.0.1:9090/ava" + l.ctx.Value("uid").(string) + ".jpg" //The static router needed!
+	link := "http://127.0.0.1:9090/ava/" + l.ctx.Value("uid").(string) + ".jpg" //The static router needed!
 	gotuser, err := l.svcCtx.MysqlModel.FindOne(l.ctx, l.ctx.Value("email").(string))
 	if err != nil {
 		return &types.Settingavaresp{
-			Status: 1,
+			Status: 5,
 		}, nil
 	}
 	if l.svcCtx.MysqlModel.Update(l.ctx, &model.User{
@@ -80,7 +81,7 @@ func (l *SettingavaLogic) Settingava(req *types.Settingavareq) (*types.Settingav
 		Type:       gotuser.Type,
 	}) != nil {
 		return &types.Settingavaresp{
-			Status: 1,
+			Status: 6,
 		}, nil
 	}
 	return &types.Settingavaresp{
