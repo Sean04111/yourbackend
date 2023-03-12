@@ -3,14 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"yourbackend/internal/config"
 	"yourbackend/internal/handler"
 	"yourbackend/internal/svc"
+
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
@@ -36,8 +37,8 @@ func main() {
 		c.Use(static.Serve("/", static.LocalFile("internal/static", true)))
 		c.NoRoute(func(c *gin.Context) {
 			accept := c.Request.Header.Get("Accept")
-			flag := strings.Contains(accept, "text/html")
-			if flag {
+			flag := strings.Contains(accept, "application/json")
+			if !flag {
 				content, err := ioutil.ReadFile("D:/GOPATH__MY/src/yourbackend/internal/static/index.html")
 				if err != nil {
 					c.Writer.WriteHeader(404)
@@ -57,8 +58,10 @@ func main() {
 	server.Start()
 
 }
+
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		fmt.Println("11111111111111")
 		method := c.Request.Method
 		origin := c.Request.Header.Get("Origin")
 		if origin != "" {

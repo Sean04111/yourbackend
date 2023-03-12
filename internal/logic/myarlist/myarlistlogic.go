@@ -44,7 +44,11 @@ func (l *MyarlistLogic) Myarlist(req *types.Myarlistreq) (resp *types.Myarlistre
 	if req.Input == "" {
 		var res []types.Arti
 		for _, k := range l.MyCatcher {
-			r, _ := l.svcCtx.ArticleMysqlModel.FindOne(l.ctx, k)
+			fmt.Println(k)
+			r, e := l.svcCtx.ArticleMysqlModel.FindOne(l.ctx, k)
+			if e!=nil{
+				return nil,e
+			}
 			res = append(res, types.Arti{
 				Id:          r.Mongoid,
 				Title:       r.Title,
@@ -63,7 +67,6 @@ func (l *MyarlistLogic) Myarlist(req *types.Myarlistreq) (resp *types.Myarlistre
 	} else {
 		res, er := l.FromES(req.Input)
 		if er != nil {
-
 			return &types.Myarlistresp{
 				Status: 2,
 			}, nil
@@ -120,10 +123,9 @@ func (l *MyarlistLogic) FromES(keyword string) ([]*model.Articles, error) {
 			}
 		}
 		var Res []*model.Articles
-		for _,k:=range l.Catcher{
+		for _, k := range l.Catcher {
 			res, e := l.svcCtx.ArticleMysqlModel.FindOne(l.ctx, k)
 			if e != nil {
-				fmt.Println("这里错了：",e)
 				return nil, e
 			}
 			Res = append(Res, res)

@@ -14,7 +14,7 @@ type(
     }
     SingleTab struct {
         TabName string `json:"tabName"`
-        ComponentName string `json:" componentName"`
+        ComponentName string `json:"componentName"`
         TabUrl string `json:"tabUrl"`
         TabIcon string `json:"tabIcon"`
     }

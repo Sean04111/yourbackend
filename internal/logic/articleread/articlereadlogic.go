@@ -155,7 +155,7 @@ func (l *ArticlereadLogic) Artihandler(article bson.M) error {
 		}
 		daysdata[6] = 1
 	} else {
-		daysdata[6] = daysdata[6].(int64) + 1
+		daysdata[6] = daysdata[6].(int32) + 1
 	}
 	_, er := articlecollection.UpdateOne(context.Background(), bson.M{"arid": article["arid"].(string)}, bson.M{"$set": bson.M{"daysdata": daysdata, "views": article["views"].(int64) + 1, "lastrefresh": time.Now().Unix()}})
 	if er != nil {
@@ -197,12 +197,12 @@ func (l *ArticlereadLogic) Userhanlder(article bson.M) error {
 
 	} else {
 		allarticles := gotuser["articles"].(bson.A)
-		var alltoday int64
+		var alltoday int32
 		for _, k := range allarticles {
 			res := articlecollection.FindOne(context.Background(), bson.M{"arid": k.(string)})
 			var ans bson.M
 			res.Decode(&ans)
-			alltoday = alltoday + ans["daysdata"].(bson.A)[6].(int64)
+			alltoday = alltoday + ans["daysdata"].(bson.A)[6].(int32)
 		}
 		alldata[6] = alltoday
 	}

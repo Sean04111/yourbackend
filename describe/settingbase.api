@@ -9,8 +9,8 @@ info(
 type(
     settingbasereq struct{
         Name string `json:"name"`
-        Profession string `json:"profession"`
-        Type string `json:"type"`
+        Profession string `json:"profession,optional"`
+        Type string `json:"type,optional"`
     }
     settingbaseresp struct{
         Status int `json:"status"`

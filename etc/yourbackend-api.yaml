@@ -1,6 +1,7 @@
 Name: yourbackend-api
 Host: 0.0.0.0
 Port: 8888
+Timeout: 500000
 DB :
   Mysql: sql_127_0_0_1:123@tcp(121.36.131.50:3306)/sql_127_0_0_1?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Auth:
@@ -18,3 +19,6 @@ Url:
 ## ms
 Tolerance:
   DBTime: 100
+ChatGPT:
+  Key: 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
+  TargetServer: http://107.150.111.138:3389

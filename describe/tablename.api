@@ -18,7 +18,7 @@ type(
 )
 service yourbackend-api {
     @handler tablename
-    get /ardatalable returns(tablenameresp)
+    get /my/ardatalable returns(tablenameresp)
 }
 
 

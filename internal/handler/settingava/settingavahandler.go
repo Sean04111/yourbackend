@@ -20,7 +20,7 @@ func SettingavaHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 		l := settingava.NewSettingavaLogic(r.Context(), svcCtx)
 		//get the img files
-		_, uploadfiles, e := r.FormFile("img")
+		_, uploadfiles, e := r.FormFile("file")
 		if e != nil {
 			httpx.ErrorCtx(r.Context(), w, e)
 		}
