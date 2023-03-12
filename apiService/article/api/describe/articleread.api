@@ -1,0 +1,28 @@
+syntax = "v2"
+
+info(
+    title: "articleread"
+    desc: "read the article"
+    author: "Sean"
+    email: "marttin666666@gmail.vom"
+    version: 1.0
+)
+type(
+    readarticlereq struct{
+        Arid string `form:"id"`
+        Userid string `form:"user,optional"`
+    }
+    readarticleresp struct{
+        Status int `json:"status"`
+        Content string `json:"content"`
+        Title string `json:"title"`
+        isEdit bool `json:"isEdit"`
+    }
+)
+@server(
+    group : articleread
+)
+service yourbackend-api {
+    @handler articleread
+    get /api/reading/content (readarticlereq) returns (readarticleresp)
+}

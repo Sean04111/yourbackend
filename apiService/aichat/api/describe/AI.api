@@ -1,0 +1,33 @@
+syntax = "v2"
+info(
+    title: "AI"
+    desc: "chatGPT chat"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    AIreq struct{
+        Temerature float64 `json:"Temperature"`
+        MaxLength float64 `json:"MaxLength"`
+        TopP float64 `json:"TopP"`
+        FrequencyPenalty float64 `json:"frequencyPenalty"`
+        PresencePenalty float64 `json:"presencePenalty"`
+        Prompt []string `json:"prompt"`
+    }
+    AIresp struct{
+        Status int `json:"status"`
+        Chat string `json:"chat"`
+        FinishReason string `json:"finishreason"`
+    }
+)
+@server(
+    jwt:Auth
+    group:AI
+)
+service yourbackend-api {
+    @handler AI
+    post /my/chat(AIreq) returns(AIresp)
+}
+
+

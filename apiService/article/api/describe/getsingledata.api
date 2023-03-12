@@ -1,0 +1,28 @@
+syntax = "v2"
+info(
+    title: "getsingledata"
+    desc: "get single article data"
+    author: "Sean"
+    email: "marttin6666666@gmail.com"
+    version: 1.0
+)
+type(
+    getsingledatareq struct{
+        Id string `form:"id"`
+    }
+    getsingledataresp struct{
+        Status int `json:"status"`
+        LineData []int64 `json:""lineData"`
+        LineLable []string `json:"lineLable"`
+    }
+)
+@server(
+    jwt : Auth
+    group : getsingledata
+)
+service yourbackend-api {
+    @handler getsingledata
+    get /ardata(getsingledatareq) returns(getsingledataresp)
+}
+
+

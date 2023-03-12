@@ -1,0 +1,28 @@
+syntax="v2"
+info(
+    title: "refreshToken"
+    desc: "refresh token"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    refreshTokenreq struct{
+        Email string `json:"email"`
+    }
+    refreshTokenresp struct{
+        Status int `json:"status"`
+        Name string `json:"name"`
+        Token string `json:"token"`
+        Expires string `json:"expires"`
+    }
+)
+@server(
+    group : refreshToken
+)
+service user-api {
+    @handler refreshToken
+    post /api/refreshToken(refreshTokenreq) returns(refreshTokenresp)
+}
+
+

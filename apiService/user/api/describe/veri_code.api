@@ -1,0 +1,26 @@
+syntax = "v2"
+info(
+    title: "verification code"
+    desc: "send verification code"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    codereq{
+        Email string `json:"email"`
+   }
+   coderesp{
+        Status int `json:"status"`
+        Code string `json:"code"`
+   }
+)
+@server(
+    group:verification_code
+)
+service user-api {
+    @handler vericode
+    post /api/code(codereq) returns(coderesp)
+}
+
+

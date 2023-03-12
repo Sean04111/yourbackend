@@ -1,0 +1,33 @@
+syntax = "v2"
+info(
+    title: "getbar"
+    desc: "get the information bar in each article"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type (
+    getbarreq struct{
+        Id string `form:"id"`
+        User string `form:"user,optional"`
+    }
+    getbarresp struct{
+        Status int `json:"status"`
+        Options []Eachbar `json:"options"`
+    }
+    Eachbar struct{
+        Icon string `json:"icon"`
+        Counts int64 `json:"counts"`
+        Active bool `json:"active"`
+        ActiveIcon string `json:"activeIcon"`
+        DisActiveIcon string `json:"disactiveIcon"`
+    }
+)
+@server(
+    group:getbar
+)
+service yourbackend-api {
+    @handler getbar
+    get /api/reading/likeinfo(getbarreq) returns(getbarresp)
+}
+

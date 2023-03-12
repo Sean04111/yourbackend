@@ -1,0 +1,26 @@
+syntax = "v2"
+info(
+    title: "settingbase"
+    desc: "users set base information"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    settingbasereq struct{
+        Name string `json:"name"`
+        Profession string `json:"profession,optional"`
+        Type string `json:"type,optional"`
+    }
+    settingbaseresp struct{
+        Status int `json:"status"`
+    }
+)
+@server(
+    group:settingbase
+    jwt:Auth
+)
+service user-api {
+    @handler settingbase
+    post /myinfo/settingbase(settingbasereq) returns(settingbaseresp)
+}

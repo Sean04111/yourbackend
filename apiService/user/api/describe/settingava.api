@@ -1,0 +1,26 @@
+syntax = "v2"
+info(
+    title: "settingava"
+    desc: "users set avalink"
+    author: "Sean"
+    email:  "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    settingavareq struct{
+        
+    }
+    settingavaresp struct {
+        Status int `json:"status"`
+    }
+)
+@server(
+    jwt:Auth
+    group:settingava
+)
+service user-api {
+    @handler settingava
+    post /myinfo/settingnewimg(settingavareq)returns(settingavaresp)
+}
+
+

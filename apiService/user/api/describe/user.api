@@ -1,0 +1,17 @@
+syntax = "v2"
+info(
+	title: "userapi"
+	desc: "user api"
+	author: "Sean"
+	email: "marttin666666@gmail.com"
+	version: 1.0
+)
+import "baseinfor.api"
+import "login.api"
+import "pubkey.api"
+import "refreshtoken.api"
+import "register.api"
+import "settingava.api"
+import "settingbase.api"
+import "updatepwd.api"
+import "veri_code.api"

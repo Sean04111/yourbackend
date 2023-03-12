@@ -1,0 +1,29 @@
+syntax = "v2"
+info(
+    title: "baseinfo"
+    desc: "base information"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    Baseinfor struct{
+        Status int `json:"status"`
+        Info Info `json:"info"`
+    }
+    Info struct{
+        AvatarLink string `json:"avatarLink"`
+        UserName string `json:"userName"`
+        Profession string `json:"profession"`
+        Usermail string `json:"userMail"`
+        Type string `json:"type"`
+    }
+)
+@server(
+    jwt:Auth
+    group:baseinfo
+)
+service user-api {
+    @handler baseinfo
+    get /user/baseInfo returns(Baseinfor)   
+}

@@ -1,0 +1,30 @@
+package settingava
+
+import (
+	"context"
+
+	"yourbackend/apiService/user/api/internal/svc"
+	"yourbackend/apiService/user/api/internal/types"
+
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+type SettingavaLogic struct {
+	logx.Logger
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+}
+
+func NewSettingavaLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SettingavaLogic {
+	return &SettingavaLogic{
+		Logger: logx.WithContext(ctx),
+		ctx:    ctx,
+		svcCtx: svcCtx,
+	}
+}
+
+func (l *SettingavaLogic) Settingava(req *types.Settingavareq) (resp *types.Settingavaresp, err error) {
+	// todo: add your logic here and delete this line
+
+	return
+}

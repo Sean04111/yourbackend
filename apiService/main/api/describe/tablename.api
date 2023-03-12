@@ -1,0 +1,24 @@
+syntax = "v2"
+info(
+    title: "tablename"
+    desc: "get table name"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    tablenameresp struct{
+        Status int `json:"status"`
+        Chartlable string `json:"chartlable"`
+    }
+)
+@server(
+    jwt:Auth
+    group:tablename
+)
+service yourbackend-api {
+    @handler tablename
+    get /my/ardatalable returns(tablenameresp)
+}
+
+

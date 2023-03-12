@@ -1,0 +1,29 @@
+syntax = "v2"
+info(
+    title: "getmylikes"
+    desc: "get my liked article"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    getmylikesresp struct{
+        Status int `json:"status"`
+        Datalikes []Ar `json:"dataLikes"`
+    }
+    Ar struct{
+            articaName string `json:"articaName"`
+            articalLink string `json:"articalLink"`
+            articalImgLink string `json:"articalImgLink"`
+            articalID string `json:"articalID"`
+        }
+)
+@server(
+    group : getmylikes
+    jwt:Auth
+)
+service yourbackend-api {
+    @handler getmylikes
+    get /user/myLikes returns(getmylikesresp)
+}
+

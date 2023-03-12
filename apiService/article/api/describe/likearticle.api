@@ -1,0 +1,27 @@
+syntax  = "v2"
+info(
+    title: "likearticle"
+    desc: "like an article"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    likearticlereq struct{
+        Active bool `json:"active"`
+        Id string `json:"id"`
+    }
+    likearticleresp struct{
+        Status int `json:"status"`
+    }
+)
+@server(
+    jwt:Auth
+    group:likearticle
+)
+service yourbackend-api {
+    @handler likearticle
+    post /reading/like(likearticlereq) returns(likearticleresp)
+}
+
+

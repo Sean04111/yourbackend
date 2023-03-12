@@ -1,0 +1,27 @@
+syntax = "v2"
+info(
+    title: "login"
+    desc: "user login"
+    author: "Sean"
+    email: "marttin666666@gmail.com"
+    version: 1.0
+)
+type(
+    loginreq struct{
+        Email string `json:"email"`
+        Password string `json:"password"`
+    }
+    loginresp struct{
+        Status int `json:"int"`
+        Name string `json:"name"`
+        AccessToken string `json:"accessToken"`
+        Expires string `json:"expires"`
+    }
+)
+@server(
+    group :login
+)
+service user-api {
+    @handler login
+    post /api/login(loginreq) returns(loginresp)
+}
