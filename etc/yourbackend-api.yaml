@@ -2,23 +2,23 @@ Name: yourbackend-api
 Host: 0.0.0.0
 Port: 8888
 Timeout: 500000
-DB :
-  Mysql: @yourmysql links
+DB:
+  Mysql: sql_127_0_0_1:123@tcp(121.36.131.50:3306)/sql_127_0_0_1?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Auth:
-  AccessSecret: @uuid
-  AccessExpire : 10000000000
+  AccessSecret: 123e4567-e89b-12d3-a456-426655440000
+  AccessExpire: 10000000000
 Redis:
-  Addr: @redisip
+  Addr: 121.36.131.50:6379
   DB: 0
 ES:
-  Addr: @elasticsearchip
+  Addr: http://121.36.131.50:9200
 Mongo:
-  Addr: @yourmongoDBip
+  Addr: mongodb://121.36.131.50:27017
 Url:
   Url: http://127.0.0.1:8888
 ## ms
 Tolerance:
   DBTime: 100
 ChatGPT:
-  Key: @chatGPT_key
-  TargetServer: @tartgetserver
+  Key: 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
+  TargetServer: http://107.150.111.138:3389
